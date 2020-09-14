@@ -53,6 +53,8 @@ deps:
   brew:
   - name: git
   - name: wget
+  - name: node
+  - name: yarn
   apt_get:
   - name: git
   - name: wget
