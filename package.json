@@ -1,0 +1,26 @@
+{
+  "name": "scrimshaw",
+  "version": "0.0.1",
+  "description": "Customisez builds for auto upgrade.",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "axios": "^0.20.0",
+    "body-parser": "^1.19.0",
+    "child_process": "^1.0.2",
+    "dotenv": "^8.2.0",
+    "express": "^4.16.4",
+    "plist": "^3.0.1",
+    "qs": "^6.9.0",
+    "tsscmp": "^1.0.6"
+  },
+  "engines": {
+    "node": "12.18.3"
+  },
+  "author": "Simon Lavigne <simon@maplemedia.io>",
+  "license": "UNLICENSED",
+  "private": true,
+  "keywords": []
+}
