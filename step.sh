@@ -5,7 +5,7 @@ echo "This is the value specified for the input IBC:\n${IBC}"
 
 yarn install
 
-$(node main.js)
+node main.js
 
 #
 # --- Export Environment Variables for other Steps:

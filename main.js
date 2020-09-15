@@ -67,9 +67,9 @@ async function main() {
     IBC = JSON.parse(process.env.IBC);
 
     // When working with CI, write the IBC to the workspace so it's versionned.
-    const outPath = IBC.workspace + "ivory_build_config.json";
+    const outPath = process.env.BITRISE_SOURCE_DIR + "/ivory_build_config.json";
     console.log(`Writing [${outPath}].`);
-    fs.writeFileSync(outPath, JSON.stringify(IBC));
+    fs.writeFileSync(outPath, process.env.IBC);
 
     // Keep CI workspace path for plist/podspec/etc ...
     IBC.workspace = process.env.BITRISE_SOURCE_DIR;
