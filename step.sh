@@ -1,7 +1,9 @@
 #!/bin/bash
 set -ex
 
-echo "This is the value specified for the input 'IBC': ${IBC}"
+echo "This is the value specified for the input IBC:\n${IBC}"
+
+yarn install
 
 $(node main.js)
 
