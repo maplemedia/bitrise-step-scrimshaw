@@ -3,6 +3,8 @@ set -ex
 
 echo "This is the value specified for the input 'IBC': ${IBC}"
 
+$(node main.js)
+
 #
 # --- Export Environment Variables for other Steps:
 # You can export Environment Variables for other Steps with

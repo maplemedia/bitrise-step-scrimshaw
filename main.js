@@ -64,8 +64,7 @@ async function main() {
 
   if ('IBC' in process.env) {
     // IBC is in the environment variables (CI)
-    var rawBuildConfig = process.env.IBC;
-    IBC = JSON.parse(rawBuildConfig);
+    IBC = JSON.parse(process.env.IBC);
     IBC.workspace = process.env.BITRISE_SOURCE_DIR;
   } else if ('IBC_PATH' in process.env) {
     // IBC is locally with a path
@@ -81,21 +80,13 @@ async function main() {
     IBC.workspace = IBCPath;
   }
 
-  var result =
-  {
-    success: true
-  };
-
   await validateIBC();
   await applyIBC();
-
-  return result;
 }
 
 (async () => {
   try {
-    var result = await main();
-    console.log(result);
+    await main();
   }
   catch (e) {
     console.log(e);
@@ -106,6 +97,10 @@ async function main() {
         console.log(e.errors[i]);
       }
     }
-    // Deal with the fact the chain failed
+
+    // Throw to bitrise
+    throw e;
   }
+
+  return 0;
 })();
