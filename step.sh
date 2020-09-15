@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-echo "This is the value specified for the input IBC:\n${IBC}"
+#echo "This is the value specified for the input IBC:${IBC}"
 
 THIS_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd ${THIS_SCRIPT_DIR}

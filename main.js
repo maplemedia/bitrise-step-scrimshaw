@@ -72,7 +72,7 @@ async function main() {
     fs.writeFileSync(outPath, process.env.IBC);
 
     // Keep CI workspace path for plist/podspec/etc ...
-    IBC.workspace = process.env.BITRISE_SOURCE_DIR;
+    IBC.workspace = process.env.BITRISE_SOURCE_DIR + "/";
 
   } else if ('IBC_PATH' in process.env) {
     // IBC is locally with a path
