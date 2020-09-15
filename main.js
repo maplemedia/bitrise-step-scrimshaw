@@ -65,7 +65,15 @@ async function main() {
   if ('IBC' in process.env) {
     // IBC is in the environment variables (CI)
     IBC = JSON.parse(process.env.IBC);
+
+    // When working with CI, write the IBC to the workspace so it's versionned.
+    const outPath = IBC.workspace + "ivory_build_config.json";
+    console.log(`Writing [${outPath}].`);
+    fs.writeFileSync(outPath, JSON.stringify(IBC));
+
+    // Keep CI workspace path for plist/podspec/etc ...
     IBC.workspace = process.env.BITRISE_SOURCE_DIR;
+
   } else if ('IBC_PATH' in process.env) {
     // IBC is locally with a path
     var rawBuildConfig = fs.readFileSync(process.env.IBC_PATH + 'ivory_build_config.json');
