@@ -66,7 +66,7 @@ toolkit:
 
 
 inputs:
-  - ivory_build_config:
+  - IBC:
     opts:
       title: "Ivory Build Config"
       summary: Add your IBC.json value so it's validated and applied to the project.
@@ -76,12 +76,10 @@ inputs:
       is_required: true
       value_options: []
 
-outputs:
-  - EXAMPLE_STEP_OUTPUT:
-    opts:
-      title: "Example Step Output"
-      summary: Summary. No more than 2-3 sentences.
-      description: |
-        Description of this output.
-
-        Can be Markdown formatted text.
+#outputs:
+#  - EXAMPLE_STEP_OUTPUT:
+#    opts:
+#      title: "Example Step Output"
+#      summary: Summary. No more than 2-3 sentences.
+#      description: |
+#        Description of this output.
