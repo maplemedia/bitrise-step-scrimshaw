@@ -102,7 +102,7 @@ async function applyIBCToPodfile(IBC) {
                                     subspecDependencies.push(k);
                                 } else {
                                     // Update spec dependency version.
-                                    console.log(`${k}:Updating podfile version [${dependency[k]}]->[${moduleConfig.version}].`);
+                                    console.log(`${k}:Updating podfile version [${moduleConfig.version}].`);
                                     dependency[k][0] = moduleConfig.version;
                                     foundDependency = dependency;
                                 }
