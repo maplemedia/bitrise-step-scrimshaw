@@ -3,8 +3,10 @@ set -ex
 
 echo "This is the value specified for the input IBC:\n${IBC}"
 
-yarn install
+THIS_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd ${THIS_SCRIPT_DIR}
 
+yarn install
 node main.js
 
 #
