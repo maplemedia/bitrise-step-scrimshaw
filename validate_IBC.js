@@ -70,7 +70,24 @@ async function validateModule(IBC, moduleConfig) {
                 }
             }
 
-            // TODO: Validate min core version.
+            // Validate min core version.
+            if ('min_core_version' in moduleDefinition) {
+                const coreModule = IBC.modules.find(element => element.name === "ivorysdk_core");
+                if (coreModule) {
+                    var moduleSplitVersion = moduleDefinition.min_core_version.split('.');
+                    var IBCCoreSplitVersion = coreModule.version.split('.');
+
+                    for (var i = 0; i < moduleSplitVersion.length && i < IBCCoreSplitVersion.length; i++) {
+                        if (IBCCoreSplitVersion[i] < moduleSplitVersion[i]) {
+                            result.isValid = false;
+                            result.errors.push(`${moduleDefinition.name} version [${moduleDefinition.version}] does not support specified ivorysdk_core version [${coreModule.version}]. Please make ivorysdk_core at least version [${moduleDefinition.min_core_version}]`);
+                        }
+                    }
+                } else {
+                    result.isValid = false;
+                    result.errors.push(`Unable to verify min_core_version for module [${moduleDefinition.name}] because ivorysdk_core module cannot be found.`);
+                }
+            }
         })
         .catch(function (error) {
             // handle error
