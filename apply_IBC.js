@@ -58,9 +58,10 @@ function execShellCommand(cmd) {
     return new Promise((resolve, reject) => {
         exec(cmd, (error, stdout, stderr) => {
         if (error) {
-        console.warn(error);
+            console.error(error);
+            throw new Error(error);
         }
-        resolve(stdout? stdout : stderr);
+            resolve(stdout? stdout : stderr);
         });
     });
 }
@@ -167,7 +168,7 @@ async function applyIBCToPodfile(IBC) {
     // Writting down JSON as YAML since YAML is supported by CocoaPods and it supports embedded JSON format.
     // NOTE: Write to 'CocoaPods.podfile.yaml' since it has priority over 'Podfile'.
     // See: https://github.com/CocoaPods/CocoaPods/blob/master/lib/cocoapods/config.rb#L296
-    const outPath = IBC.workspace + "CocoaPods.podfile.yaml";
+    const outPath = filePath.substring(0, filePath.lastIndexOf('/')) + '/CocoaPods.podfile.yaml';
     console.log(`Writing [${outPath}].`);
     fs.writeFileSync(outPath, JSON.stringify(jsonPodfile));
 

@@ -47,13 +47,13 @@ function applyAndroidIBC() {
 
 }
 
-function applyiOSIBC() {
+async function applyiOSIBC() {
   const applyPlistResult = apply_IBC.applyIBCToPlist(IBC);
   if (!applyPlistResult.success) {
     throw applyPlistResult;
   }
 
-  const applyPodfileResult = apply_IBC.applyIBCToPodfile(IBC);
+  const applyPodfileResult = await apply_IBC.applyIBCToPodfile(IBC);
   if (!applyPodfileResult.success) {
     throw applyPodfileResult;
   }
@@ -78,14 +78,8 @@ async function main() {
     // IBC is locally with a path
     var rawBuildConfig = fs.readFileSync(process.env.IBC_PATH + 'ivory_build_config.json');
     IBC = JSON.parse(rawBuildConfig);
-    IBC.workspace = process.env.IBC_PATH;
-  } else if (process.argv.length > 2) {
-    // IBC path is a parameter to the node process
-    var IBCPath = process.argv[2];
-  
-    var rawBuildConfig = fs.readFileSync(IBCPath + 'ivory_build_config.json');
-    IBC = JSON.parse(rawBuildConfig);
-    IBC.workspace = IBCPath;
+
+    IBC.workspace = process.env.BITRISE_SOURCE_DIR + "/";
   }
 
   await validateIBC();
