@@ -59,30 +59,27 @@ function applyiOSIBC() {
   }
 }
 
-async function applyIBCToPList() {
-
-}
-
 async function main() {
   const fs = require('fs');
 
-  // Check if IBC is in the environment variables (CI)
   if ('IBC' in process.env) {
+    // IBC is in the environment variables (CI)
     var rawBuildConfig = process.env.IBC;
     IBC = JSON.parse(rawBuildConfig);
     IBC.workspace = process.env.BITRISE_SOURCE_DIR;
-  } else {
-    var workspace = 'D:/git/IvorySDK_Sample/Samples/iOS/';
-    if (process.argv.length > 2) {
-      workspace = process.argv[2];
-      console.log(`Using workspace:${workspace}`);
-    }
-  
-    var rawBuildConfig = fs.readFileSync(workspace + 'ivory_build_config.json');
+  } else if ('IBC_PATH' in process.env) {
+    // IBC is locally with a path
+    var rawBuildConfig = fs.readFileSync(process.env.IBC_PATH + 'ivory_build_config.json');
     IBC = JSON.parse(rawBuildConfig);
-    IBC.workspace = workspace;
+    IBC.workspace = process.env.IBC_PATH;
+  } else if (process.argv.length > 2) {
+    // IBC path is a parameter to the node process
+    var IBCPath = process.argv[2];
+  
+    var rawBuildConfig = fs.readFileSync(IBCPath + 'ivory_build_config.json');
+    IBC = JSON.parse(rawBuildConfig);
+    IBC.workspace = IBCPath;
   }
-
 
   var result =
   {
