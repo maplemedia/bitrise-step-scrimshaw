@@ -87,8 +87,21 @@ async function applyIBCToPodfile(IBC) {
             // Find root for this target.
             var targetDefinition = jsonPodfile.target_definitions[0].children.find(element => element.name === podfileTarget);
             if (targetDefinition) {
+                // Clear all dependencies starting with ivorysdk.
+                var i = targetDefinition.dependencies.length
+                while (i--) {
+                    var keys = Object.keys(targetDefinition.dependencies[i]);
+                    if (keys && keys.length > 0 && keys[0].toLowerCase().startsWith("ivorysdk")) {
+                        targetDefinition.dependencies.splice(i, 1);
+                    }
+                }
+
+                // TODO: Clear dependencies for pods that we need to remove because of modules.
+                // example: Fyber_Marketplace_MoPubAdapter
+
                 // Apply dependency versions and sources of modules.
                 for (var moduleConfig of IBC.modules) {
+
                     // Find the podfile dependency for this module.
                     var foundDependency = null;
                     var subspecDependencies = [];
@@ -96,7 +109,7 @@ async function applyIBCToPodfile(IBC) {
                         var dependency = targetDefinition.dependencies[i];
                         Object.keys(dependency).forEach(function (k) {
                             // JSON dependencies are written like:[spec/subspec]
-                            if (k.toLowerCase().startsWith(moduleConfig.name.toLowerCase())) {
+                            if (k.toLowerCase().startsWith(moduleConfig.library_name.toLowerCase())) {
                                 if (k.includes('/')) {
                                     // Subspecs append a '/' character. We remove them all and add new ones later ...
                                     subspecDependencies.push(k);
@@ -106,7 +119,6 @@ async function applyIBCToPodfile(IBC) {
                                     dependency[k][0] = moduleConfig.version;
                                     foundDependency = dependency;
                                 }
-
                             }
                         })
                     }
@@ -115,7 +127,7 @@ async function applyIBCToPodfile(IBC) {
                     for (var subspec of subspecDependencies) {
                         for (var i = 0; i < targetDefinition.dependencies.length; i++) {
                             if (targetDefinition.dependencies[i].hasOwnProperty(subspec)) {
-                                console.log(`${moduleConfig.name}:removing subspec from old podfile:[${subspec}].`);
+                                console.log(`${moduleConfig.library_name}:removing subspec from old podfile:[${subspec}].`);
                                 targetDefinition.dependencies.splice(i, 1);
                                 break;
                             }
@@ -124,9 +136,9 @@ async function applyIBCToPodfile(IBC) {
 
                     // Add dependency if it is missing.
                     if (!foundDependency) {
-                        console.log(`Adding podfile dependency [${moduleConfig.name}:${moduleConfig.version}]`);
+                        console.log(`Adding podfile dependency [${moduleConfig.library_name}:${moduleConfig.version}]`);
                         var newDependency = {};
-                        newDependency[moduleConfig.name] = [moduleConfig.version];
+                        newDependency[moduleConfig.library_name] = [moduleConfig.version];
                         targetDefinition.dependencies.push(newDependency);
                         foundDependency = targetDefinition.dependencies[targetDefinition.dependencies.length - 1];
                     }
@@ -136,9 +148,9 @@ async function applyIBCToPodfile(IBC) {
                         for (var adNetworkConfig of moduleConfig.ad_networks) {
                             // Add ad network subspecs.
                             var newDependency = {};
-                            newDependency[`${moduleConfig.name}/${adNetworkConfig.name}`] = [moduleConfig.version];
+                            newDependency[`${moduleConfig.library_name}/${adNetworkConfig.name}`] = [moduleConfig.version];
                             targetDefinition.dependencies.push(newDependency);
-                            console.log(`Adding subspec dependency [${Object.keys(newDependency)[0]}]`);
+                            console.log(`Adding subspec dependency [${Object.keys(newDependency)[0]}]:${moduleConfig.version}`);
 
                             // New podfile sources.
                             if (adNetworkConfig.hasOwnProperty('source')) {

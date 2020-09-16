@@ -70,6 +70,10 @@ async function validateModule(IBC, moduleConfig) {
                 }
             }
 
+            // Keep the library_name for later use when applying.
+            var currentPlatformDefinition = moduleDefinition.platforms.find(element => element.name === IBC.platform);
+            moduleConfig.library_name = currentPlatformDefinition.library_name;
+
             // Validate min core version.
             if ('min_core_version' in moduleDefinition) {
                 const coreModule = IBC.modules.find(element => element.name === "ivorysdk_core");
