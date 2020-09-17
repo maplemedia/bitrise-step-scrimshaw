@@ -74,22 +74,25 @@ async function validateModule(IBC, moduleConfig) {
             var currentPlatformDefinition = moduleDefinition.platforms.find(element => element.name === IBC.platform);
             moduleConfig.library_name = currentPlatformDefinition.library_name;
 
-            // Validate min core version.
-            if ('min_core_version' in moduleDefinition) {
-                const coreModule = IBC.modules.find(element => element.name === "ivorysdk_core");
-                if (coreModule) {
-                    var moduleSplitVersion = moduleDefinition.min_core_version.split('.');
-                    var IBCCoreSplitVersion = coreModule.version.split('.');
+            // Validate module dependencies to other modules' min_version value.
+            // Example: MoPub can't depend on older Core versions.
+            if ('dependencies' in moduleDefinition) {
+                for (var dependency of moduleDefinition.dependencies) {
+                    const dependencyModule = IBC.modules.find(element => element.name === dependency.name);
+                    if (dependencyModule) {
+                        var moduleSplitVersion = dependency.min_version.split('.');
+                        var dependencySplitVersion = dependencyModule.version.split('.');
 
-                    for (var i = 0; i < moduleSplitVersion.length && i < IBCCoreSplitVersion.length; i++) {
-                        if (IBCCoreSplitVersion[i] < moduleSplitVersion[i]) {
-                            result.isValid = false;
-                            result.errors.push(`${moduleDefinition.name} version [${moduleDefinition.version}] does not support specified ivorysdk_core version [${coreModule.version}]. Please make ivorysdk_core at least version [${moduleDefinition.min_core_version}]`);
+                        for (var i = 0; i < moduleSplitVersion.length && i < dependencySplitVersion.length; i++) {
+                            if (dependencySplitVersion[i] < moduleSplitVersion[i]) {
+                                result.isValid = false;
+                                result.errors.push(`[${moduleDefinition.name}:${moduleDefinition.version}] does not support specified [${dependencyModule.name}:${dependencyModule.version}] because the version is too low. Please make [${dependencyModule.name}] at least version [${dependency.min_version}]`);
+                            }
                         }
+                    } else {
+                        result.isValid = false;
+                        result.errors.push(`Unable to verify dependency for module [${moduleDefinition.name}] because [${dependency.name}] module cannot be found in the IBC.`);
                     }
-                } else {
-                    result.isValid = false;
-                    result.errors.push(`Unable to verify min_core_version for module [${moduleDefinition.name}] because ivorysdk_core module cannot be found.`);
                 }
             }
         })

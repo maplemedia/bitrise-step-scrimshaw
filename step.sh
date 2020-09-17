@@ -3,9 +3,11 @@ set -ex
 
 #echo "This is the value specified for the input IBC:${IBC}"
 
+# cd the bash focus to the location of this script so we can run the nodejs code.
 THIS_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd ${THIS_SCRIPT_DIR}
 
+# install dependencies and run Scrimshaw nodejs.
 yarn install
 node main.js
 

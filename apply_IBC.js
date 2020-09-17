@@ -87,7 +87,7 @@ async function applyIBCToPodfile(IBC) {
             // HACK: Turn the uses_frameworks hash into a boolean. cocoapods causes an error otherwise.
             for (var child of jsonPodfile.target_definitions[0].children) {
                 if (child.hasOwnProperty('uses_frameworks')) {
-                    console.log(`Patching uses_frameworks of [${child.name}] to boolean.`);
+                    console.log(`HACK: Patching uses_frameworks of [${child.name}] to boolean.`);
                     child['uses_frameworks'] = true;
                 }
             }
@@ -100,6 +100,7 @@ async function applyIBCToPodfile(IBC) {
                 while (i--) {
                     var keys = Object.keys(targetDefinition.dependencies[i]);
                     if (keys && keys.length > 0 && keys[0].toLowerCase().startsWith("ivorysdk")) {
+                        console.log(`Removing IvorySDK reference from Podfile:[${keys[0]}].`);
                         targetDefinition.dependencies.splice(i, 1);
                     }
                 }
@@ -109,7 +110,6 @@ async function applyIBCToPodfile(IBC) {
 
                 // Apply dependency versions and sources of modules.
                 for (var moduleConfig of IBC.modules) {
-
                     // Find the podfile dependency for this module.
                     var foundDependency = null;
                     var subspecDependencies = [];
@@ -141,7 +141,6 @@ async function applyIBCToPodfile(IBC) {
                             }
                         }
                     }
-
 
                     // Ad network specific features. Ad networks are special because we don't include the IvorySDK_{module}:version
                     // specifically otherwise it includes all of its submodules. We rather only include the array of submodules so
