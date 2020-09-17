@@ -84,6 +84,14 @@ async function applyIBCToPodfile(IBC) {
     if (jsonPodfile.hasOwnProperty('target_definitions') && jsonPodfile.target_definitions[0].hasOwnProperty('children')) {
         // Apply for every podfile target.
         for (var podfileTarget of IBC.podfile_targets) {
+            // HACK: Turn the uses_frameworks hash into a boolean. cocoapods causes an error otherwise.
+            for (var child of jsonPodfile.target_definitions[0].children) {
+                if (child.hasOwnProperty('uses_frameworks')) {
+                    console.log(`Patching uses_frameworks of [${child.name}] to boolean.`);
+                    child['uses_frameworks'] = true;
+                }
+            }
+
             // Find root for this target.
             var targetDefinition = jsonPodfile.target_definitions[0].children.find(element => element.name === podfileTarget);
             if (targetDefinition) {
