@@ -142,16 +142,10 @@ async function applyIBCToPodfile(IBC) {
                         }
                     }
 
-                    // Add dependency if it is missing.
-                    if (!foundDependency) {
-                        console.log(`Adding podfile dependency [${moduleConfig.library_name}:${moduleConfig.version}]`);
-                        var newDependency = {};
-                        newDependency[moduleConfig.library_name] = [moduleConfig.version];
-                        targetDefinition.dependencies.push(newDependency);
-                        foundDependency = targetDefinition.dependencies[targetDefinition.dependencies.length - 1];
-                    }
 
-                    // Ad network specific features.
+                    // Ad network specific features. Ad networks are special because we don't include the IvorySDK_{module}:version
+                    // specifically otherwise it includes all of its submodules. We rather only include the array of submodules so
+                    // we can have exact lists.
                     if (moduleConfig.hasOwnProperty('ad_networks')) {
                         for (var adNetworkConfig of moduleConfig.ad_networks) {
                             // Add ad network subspecs.
@@ -167,6 +161,12 @@ async function applyIBCToPodfile(IBC) {
                                 }
                             }
                         }
+                    } else if (!foundDependency) {
+                        // Add dependency if it is missing.
+                        console.log(`Adding podfile dependency [${moduleConfig.library_name}:${moduleConfig.version}]`);
+                        var newDependency = {};
+                        newDependency[moduleConfig.library_name] = [moduleConfig.version];
+                        targetDefinition.dependencies.push(newDependency);
                     }
                 }
             }
