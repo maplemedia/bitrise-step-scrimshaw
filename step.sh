@@ -5,11 +5,11 @@ set -ex
 
 # cd the bash focus to the location of this script so we can run the nodejs code.
 THIS_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd ${THIS_SCRIPT_DIR}
+cd ${THIS_SCRIPT_DIR}/Scrimshaw/
 
 # install dependencies and run Scrimshaw nodejs.
 yarn install
-node main.js
+node scrimshaw_apply.js
 
 #
 # --- Export Environment Variables for other Steps:
