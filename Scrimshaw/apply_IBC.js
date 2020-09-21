@@ -1,5 +1,6 @@
 const fs = require('fs');
 const plist = require('plist');
+const ibcLoader = require("./scrimshaw_ibc");
 
 // Default sources are required by any IBC.
 var ivoryPodfileSources = [
@@ -21,16 +22,19 @@ function applyIBCToPlist(IBC) {
         if (moduleConfig.hasOwnProperty('ad_networks')) {
             for (var adNetworkConfig of moduleConfig.ad_networks) {
                 if (adNetworkConfig.hasOwnProperty('id')) {
-                    if (adNetworkConfig.hasOwnProperty('id_key')) {
+                    // Get ad network id name from definition.
+                    const adNetworkDefinition = ibcLoader.getAdNetworkDefinition(moduleConfig.definition, IBC.platform, adNetworkConfig.name);
+
+                    if (adNetworkDefinition.hasOwnProperty('id')) {
                         plistToApply.push(
                             {
-                                "key": adNetworkConfig.id_key,
+                                "key": adNetworkDefinition.id,
                                 "value": adNetworkConfig.id
                             });
                     }
                     else {
                         result.success = false;
-                        result.errors.push(`Missing id_key for ad config network ${moduleConfig.name}:${adNetworkConfig.name}`);
+                        result.errors.push(`Missing 'adNetworkDefinition.id' for ad config network ${moduleConfig.name}:${adNetworkConfig.name}`);
                     }
                 }
             }
@@ -39,7 +43,7 @@ function applyIBCToPlist(IBC) {
 
     if (result.success) {
         // Turn plist into json to apply values.
-        const filePath = IBC.workspace + IBC.plist_path;
+        const filePath = process.env.BITRISE_SOURCE_DIR + "/" + IBC.plist_path;
         var loadedPlist = plist.parse(fs.readFileSync(filePath, 'utf8'));
         for (var valueToApply of plistToApply) {
             loadedPlist[valueToApply.key] = valueToApply.value;
@@ -53,19 +57,6 @@ function applyIBCToPlist(IBC) {
     return result;
 }
 
-function execShellCommand(cmd) {
-    const exec = require('child_process').exec;
-    return new Promise((resolve, reject) => {
-        exec(cmd, (error, stdout, stderr) => {
-        if (error) {
-            console.error(error);
-            throw new Error(error);
-        }
-            resolve(stdout? stdout : stderr);
-        });
-    });
-}
-
 async function applyIBCToPodfile(IBC) {
     var result =
     {
@@ -74,8 +65,9 @@ async function applyIBCToPodfile(IBC) {
     };
 
     // Turn Podfile into JSON for easier handling.
-    const filePath = IBC.workspace + IBC.podfile_path;
-    var rawJsonPodfile = await execShellCommand("pod ipc podfile-json " + filePath)
+    const filePath = process.env.BITRISE_SOURCE_DIR + "/" + IBC.podfile_path;
+    const exec_cmd = require("./exec_cmd");
+    var rawJsonPodfile = await exec_cmd.execShellCommand("pod ipc podfile-json " + filePath)
 
     console.log(`rawJsonPodfile: ${rawJsonPodfile}`);
 
@@ -110,6 +102,8 @@ async function applyIBCToPodfile(IBC) {
 
                 // Apply dependency versions and sources of modules.
                 for (var moduleConfig of IBC.modules) {
+                    const platformModuleDefinition = ibcLoader.getModuleDefinitionForPlatform(moduleConfig.definition, IBC.platform);
+
                     // Find the podfile dependency for this module.
                     var foundDependency = null;
                     var subspecDependencies = [];
@@ -117,7 +111,7 @@ async function applyIBCToPodfile(IBC) {
                         var dependency = targetDefinition.dependencies[i];
                         Object.keys(dependency).forEach(function (k) {
                             // JSON dependencies are written like:[spec/subspec]
-                            if (k.toLowerCase().startsWith(moduleConfig.library_name.toLowerCase())) {
+                            if (k.toLowerCase().startsWith(platformModuleDefinition.library_name.toLowerCase())) {
                                 if (k.includes('/')) {
                                     // Subspecs append a '/' character. We remove them all and add new ones later ...
                                     subspecDependencies.push(k);
@@ -135,7 +129,7 @@ async function applyIBCToPodfile(IBC) {
                     for (var subspec of subspecDependencies) {
                         for (var i = 0; i < targetDefinition.dependencies.length; i++) {
                             if (targetDefinition.dependencies[i].hasOwnProperty(subspec)) {
-                                console.log(`${moduleConfig.library_name}:removing subspec from old podfile:[${subspec}].`);
+                                console.log(`${platformModuleDefinition.library_name}:removing subspec from old podfile:[${subspec}].`);
                                 targetDefinition.dependencies.splice(i, 1);
                                 break;
                             }
@@ -149,7 +143,7 @@ async function applyIBCToPodfile(IBC) {
                         for (var adNetworkConfig of moduleConfig.ad_networks) {
                             // Add ad network subspecs.
                             var newDependency = {};
-                            newDependency[`${moduleConfig.library_name}/${adNetworkConfig.name}`] = [moduleConfig.version];
+                            newDependency[`${platformModuleDefinition.library_name}/${adNetworkConfig.name}`] = [moduleConfig.version];
                             targetDefinition.dependencies.push(newDependency);
                             console.log(`Adding subspec dependency [${Object.keys(newDependency)[0]}]:${moduleConfig.version}`);
 
@@ -162,9 +156,9 @@ async function applyIBCToPodfile(IBC) {
                         }
                     } else if (!foundDependency) {
                         // Add dependency if it is missing.
-                        console.log(`Adding podfile dependency [${moduleConfig.library_name}:${moduleConfig.version}]`);
+                        console.log(`Adding podfile dependency [${platformModuleDefinition.library_name}:${moduleConfig.version}]`);
                         var newDependency = {};
-                        newDependency[moduleConfig.library_name] = [moduleConfig.version];
+                        newDependency[platformModuleDefinition.library_name] = [moduleConfig.version];
                         targetDefinition.dependencies.push(newDependency);
                     }
                 }

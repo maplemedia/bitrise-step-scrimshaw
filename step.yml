@@ -55,6 +55,7 @@ deps:
   - name: wget
   - name: node
   - name: yarn
+  - name: fastlane
   apt_get:
   - name: git
   - name: wget
