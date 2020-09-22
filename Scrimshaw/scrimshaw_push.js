@@ -34,7 +34,7 @@ async function main() {
 
           // Pushing the B tag will auto-trigger a publish workflow with this version.
           shell.pushd(process.env.BITRISE_SOURCE_DIR + "/" + IBC.proj_path);
-          if (shell.exec(`git push --tags --set-upstream origin Scrimshaw-${appVersion}`).code !== 0) throw new Error('Cannot push git branch');
+          if (shell.exec(`git push --tags --force --set-upstream origin Scrimshaw-${appVersion}`).code !== 0) throw new Error('Cannot push git branch');
 
           // Publish the PR using Github API
           // Ref: https://docs.github.com/en/rest/reference/pulls
@@ -90,7 +90,8 @@ async function main() {
       }
   
       // Throw to bitrise
-      throw e;
+      //throw e;
+      return -1;
     }
   
     return 0;
