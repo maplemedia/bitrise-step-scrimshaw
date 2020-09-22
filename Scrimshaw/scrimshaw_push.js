@@ -6,6 +6,7 @@ if (dotEnvResult.error) {
 var shell = require('shelljs');
 const plist = require('plist');
 const axios = require("axios");
+const fs = require('fs');
 
 // Download module definitions from github.
 const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
@@ -20,7 +21,6 @@ async function main() {
 
     const ibcLoader = require("./scrimshaw_ibc");
     IBC = ibcLoader.loadIBC();
-
 
     // Only continue if we can push the PR to github. Otherwise, the push won't be as easy to merge.
     if (IBC.hasOwnProperty('github_owner') && IBC.hasOwnProperty('github_repo')) {
