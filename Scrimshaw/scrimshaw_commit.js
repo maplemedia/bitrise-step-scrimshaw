@@ -5,6 +5,9 @@ if (dotEnvResult.error) {
 
 const exec_cmd = require("./exec_cmd");
 var shell = require('shelljs');
+const plist = require('plist');
+const semver = require('semver');
+const fs = require('fs');
 
 async function main() {
     var result =
@@ -16,33 +19,59 @@ async function main() {
     const ibcLoader = require("./scrimshaw_ibc");
     IBC = ibcLoader.loadIBC();
 
-    if (IBC.hasOwnProperty('xcodeproj_path')) {
-        shell.pushd(process.env.BITRISE_SOURCE_DIR + IBC.proj_path);
-        shell.exec(`fastlane add_plugin versioning`);
-        shell.exec(`fastlane run increment_version_number_in_xcodeproj bump_type:"patch" xcodeproj:"${IBC.xcodeproj_path}"`);
-        shell.exec(`fastlane run increment_build_number`);
-        shell.exec(`fastlane run increment_build_number`);
-        var newVersion = exec(`fastlane run get_version_number xcodeproj:"${IBC.xcodeproj_path}"`, {silent:true}).stdout;
-        console.log(`newVersion:${newVersion}`);
+    if (IBC.hasOwnProperty('xcodeproj_path') && IBC.hasOwnProperty('plist_path')) {
 
+        // Turn plist into json to apply values.
+        const filePath = process.env.BITRISE_SOURCE_DIR + "/" + IBC.plist_path;
+        var loadedPlist = plist.parse(fs.readFileSync(filePath, 'utf8'));
+        if (loadedPlist.hasOwnProperty('CFBundleShortVersionString')) {
+          // Increment patch version.
+          var appVersion = loadedPlist['CFBundleShortVersionString'];
+          if (semver.valid(appVersion)) {
+            appVersion = semver.inc(appVersion, 'patch');
+            console.log(`Increasing app version [${loadedPlist['CFBundleShortVersionString']}->${appVersion}]`);
+            loadedPlist['CFBundleShortVersionString'] = appVersion;
+          } else {
+            result.isValid = false;
+            result.errors.push(`Invalid format [${filePath}:CFBundleShortVersionString]=${appVersion} as semantic version, more info https://semver.org/`);
+          }
+        } else {
+          result.isValid = false;
+          result.errors.push(`Cannot find CFBundleShortVersionString key in app's plist at:[${filePath}]`);
+        }
 
-        // Create a new branch for this build and commit all of the scrimshaw modifications to it.
-        // If the build succeeds, the scrimshaw_push step will push all these changes to github.
-        /*await exec_cmd.execShellCommandProjDir(`fastlane add_plugin versioning`, IBC);
-        await exec_cmd.execShellCommandProjDir(`fastlane run increment_version_number_in_xcodeproj bump_type:"patch" xcodeproj:"${IBC.xcodeproj_path}"`, IBC);
-        await exec_cmd.execShellCommandProjDir(`fastlane run increment_build_number`, IBC);
-        var newVersion = await exec_cmd.execShellCommandProjDir(`fastlane run get_version_number xcodeproj:"${IBC.xcodeproj_path}"`, IBC);
-        await exec_cmd.execShellCommandSourceDir(`git config --global user.name "MapleMediaMachine"`);
-        await exec_cmd.execShellCommandSourceDir(`git config --global user.email "maplemediacanada@gmail.com"`);
-        await exec_cmd.execShellCommandSourceDir(`git checkout -b Scrimshaw-${newVersion}`);
-        await exec_cmd.execShellCommandSourceDir(`git add --all`);
-        await exec_cmd.execShellCommandSourceDir(`git commit -a -m "Scrimshaw:[${newVersion}]" -m "msg:[${process.env.BITRISE_GIT_MESSAGE}]"`);
+        // Increment bundle version.
+        if (loadedPlist.hasOwnProperty('CFBundleVersion')) {
+          var bundleVersion = parseInt(loadedPlist['CFBundleVersion']);
+          console.log(`Increasing bundle version [${bundleVersion}->${bundleVersion+1}]`);
+          bundleVersion++;
+          loadedPlist['CFBundleVersion'] = bundleVersion.toString();
+        } else {
+          result.isValid = false;
+          result.errors.push(`Cannot find CFBundleVersion key in app's plist at:[${filePath}]`);
+        }
 
-        // Append BETA SCRIMSHAW to tag.
-        await exec_cmd.execShellCommandSourceDir(`git tag -a ${newVersion}.B.S`);*/
+        if (result.isValid) {
+          // Turn back into plist format for writing.
+          var appliedPlist = plist.build(loadedPlist)
+          fs.writeFileSync(filePath, appliedPlist);
+          console.log(`Writing plist:[${filePath}]`);
+
+          // Create a new branch for this build and commit all of the scrimshaw modifications to it.
+          // If the build succeeds, the scrimshaw_push step will push all these changes to github.
+          shell.pushd(process.env.BITRISE_SOURCE_DIR + IBC.proj_path);
+          shell.exec(`git config --global user.name "MapleMediaMachine"`);
+          shell.exec(`git config --global user.email "maplemediacanada@gmail.com"`);
+          shell.exec(`git checkout -b Scrimshaw-${appVersion}`);
+          shell.exec(`git add --all`);
+          shell.exec(`git commit -a -m "Scrimshaw:[${appVersion}]" -m "msg:[${process.env.BITRISE_GIT_MESSAGE}]"`);
+  
+          // Append BETA SCRIMSHAW to tag.
+          shell.exec(`git tag -a ${appVersion}.B.S`);
+        }
     } else {
         result.isValid = false;
-        result.errors.push('Missing xcodeproj_path in IBC');
+        result.errors.push('Missing xcodeproj_path or plist_path in IBC');
     }
 
     if (!result.isValid){
