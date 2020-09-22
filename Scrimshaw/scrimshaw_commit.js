@@ -61,7 +61,7 @@ async function main() {
           if (shell.exec('git config --global user.email "maplemediacanada@gmail.com"').code !== 0) throw new Error('Failed to set git user.email');
           if (shell.exec(`git checkout -b Scrimshaw-${appVersion}`).code !== 0) throw new Error('Failed to git checkout branch');
           if (shell.exec(`git add --all`).code !== 0) throw new Error('git failed to add all changes');
-          if (shell.exec(`git commit -m "Scrimshaw:[${appVersion}]:[${process.env.BITRISE_GIT_MESSAGE}]"`).code !== 0) throw new Error('git failed to commit');
+          if (shell.exec(`git commit -am "Scrimshaw:[${appVersion}]:[${process.env.BITRISE_GIT_MESSAGE}]"`).code !== 0) throw new Error('git failed to commit');
   
           // Append BETA SCRIMSHAW to tag.
           if (shell.exec(`git tag -a ${appVersion}.B.S`).code !== 0) throw new Error(`git failed to tag commit`);
@@ -91,7 +91,8 @@ async function main() {
       }
   
       // Throw to bitrise
-      throw e;
+      return -1;
+      //throw e;
     }
   
     return 0;
