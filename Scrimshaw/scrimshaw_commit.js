@@ -3,7 +3,6 @@ if (dotEnvResult.error) {
   throw dotEnvResult.error
 }
 
-const exec_cmd = require("./exec_cmd");
 var shell = require('shelljs');
 const plist = require('plist');
 const semver = require('semver');
@@ -20,8 +19,6 @@ async function main() {
     IBC = ibcLoader.loadIBC();
 
     if (IBC.hasOwnProperty('xcodeproj_path') && IBC.hasOwnProperty('plist_path')) {
-
-        // Turn plist into json to apply values.
         const filePath = process.env.BITRISE_SOURCE_DIR + "/" + IBC.plist_path;
         var loadedPlist = plist.parse(fs.readFileSync(filePath, 'utf8'));
         if (loadedPlist.hasOwnProperty('CFBundleShortVersionString')) {
@@ -64,7 +61,7 @@ async function main() {
           shell.exec(`git config --global user.email "maplemediacanada@gmail.com"`);
           shell.exec(`git checkout -b Scrimshaw-${appVersion}`);
           shell.exec(`git add --all`);
-          shell.exec(`git commit -a -m "Scrimshaw:[${appVersion}]" -m "msg:[${process.env.BITRISE_GIT_MESSAGE}]"`);
+          shell.exec(`git commit -a -m "Scrimshaw:[${appVersion}]:[${process.env.BITRISE_GIT_MESSAGE}]"`);
   
           // Append BETA SCRIMSHAW to tag.
           shell.exec(`git tag -a ${appVersion}.B.S`);
