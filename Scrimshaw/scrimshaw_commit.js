@@ -57,16 +57,14 @@ async function main() {
           // Create a new branch for this build and commit all of the scrimshaw modifications to it.
           // If the build succeeds, the scrimshaw_push step will push all these changes to github.
           shell.pushd(process.env.BITRISE_SOURCE_DIR + "/" + IBC.proj_path);
-          shell.exec(`git config --global user.name "MapleMediaMachine"`);
-          shell.exec(`git config --global user.email "maplemediacanada@gmail.com"`);
-          //shell.exec(`git config --global core.editor /usr/bin/vim`);
-          shell.exec(`git checkout -b Scrimshaw-${appVersion}`);
-          shell.exec(`git add --all`);
-          //shell.exec(`git commit -m "Scrimshaw:[${appVersion}]:[${process.env.BITRISE_GIT_MESSAGE}]"`);
-          shell.exec(`git commit --allow-empty-message`);
+          if (shell.exec('git config --global user.name "MapleMediaMachine"').code !== 0) throw new Error('Failed to set git user.name');
+          if (shell.exec('git config --global user.email "maplemediacanada@gmail.com"').code !== 0) throw new Error('Failed to set git user.email');
+          if (shell.exec(`git checkout -b Scrimshaw-${appVersion}`).code !== 0) throw new Error('Failed to git checkout branch');
+          if (shell.exec(`git add --all`).code !== 0) throw new Error('git failed to add all changes');
+          if (shell.exec(`git commit -m "Scrimshaw:[${appVersion}]:[${process.env.BITRISE_GIT_MESSAGE}]"`).code !== 0) throw new Error('git failed to commit');
   
           // Append BETA SCRIMSHAW to tag.
-          shell.exec(`git tag -a ${appVersion}.B.S`);
+          if (shell.exec(`git tag -a ${appVersion}.B.S`).code !== 0) throw new Error(`git failed to tag commit`);
         }
     } else {
         result.isValid = false;
