@@ -56,7 +56,7 @@ async function main() {
 
           // Create a new branch for this build and commit all of the scrimshaw modifications to it.
           // If the build succeeds, the scrimshaw_push step will push all these changes to github.
-          shell.pushd(process.env.BITRISE_SOURCE_DIR + IBC.proj_path);
+          shell.pushd(process.env.BITRISE_SOURCE_DIR + "/" + IBC.proj_path);
           shell.exec(`git config --global user.name "MapleMediaMachine"`);
           shell.exec(`git config --global user.email "maplemediacanada@gmail.com"`);
           shell.exec(`git checkout -b Scrimshaw-${appVersion}`);
