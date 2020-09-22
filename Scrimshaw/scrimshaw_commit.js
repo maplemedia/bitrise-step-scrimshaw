@@ -63,7 +63,7 @@ async function main() {
           shell.exec(`git checkout -b Scrimshaw-${appVersion}`);
           shell.exec(`git add --all`);
           //shell.exec(`git commit -m "Scrimshaw:[${appVersion}]:[${process.env.BITRISE_GIT_MESSAGE}]"`);
-          shell.exec(`git commit -m "testing"`);
+          shell.exec(`git commit --allow-empty-message`);
   
           // Append BETA SCRIMSHAW to tag.
           shell.exec(`git tag -a ${appVersion}.B.S`);
