@@ -34,23 +34,20 @@ async function main() {
 
           // Pushing the B tag will auto-trigger a publish workflow with this version.
           shell.pushd(process.env.BITRISE_SOURCE_DIR + "/" + IBC.proj_path);
-          shell.exec(`git push --tags --set-upstream origin Scrimshaw-${appVersion}`);
+          if (shell.exec(`git push --tags --set-upstream origin Scrimshaw-${appVersion}`).code !== 0) throw new Error('Cannot push git branch');
 
           // Publish the PR using Github API
           // Ref: https://docs.github.com/en/rest/reference/pulls
           await axiosGithub.post(`/repos/${IBC.github_owner}/${IBC.github_repo}/pulls`,
           {
-              params:
-              {
-                  // Required. The title of the new pull request.
-                  title: `Scrimshaw-${appVersion}`,
-                  // Required. The name of the branch where your changes are implemented.
-                  head: `Scrimshaw-${appVersion}`,
-                  // Required. The name of the branch you want the changes pulled into.
-                  base: `${process.env.BITRISE_GIT_BRANCH}`,
-                  // The contents of the pull request.
-                  body: `${process.env.BITRISE_GIT_MESSAGE}`
-              }
+              // Required. The title of the new pull request.
+              title: `Scrimshaw-${appVersion}`,
+              // Required. The name of the branch where your changes are implemented.
+              head: `Scrimshaw-${appVersion}`,
+              // Required. The name of the branch you want the changes pulled into.
+              base: `${process.env.BITRISE_GIT_BRANCH}`,
+              // The contents of the pull request.
+              body: `${process.env.BITRISE_GIT_MESSAGE}`
           })
           .then(function (response) {
           })
