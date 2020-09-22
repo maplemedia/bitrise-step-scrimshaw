@@ -59,9 +59,10 @@ async function main() {
           shell.pushd(process.env.BITRISE_SOURCE_DIR + "/" + IBC.proj_path);
           shell.exec(`git config --global user.name "MapleMediaMachine"`);
           shell.exec(`git config --global user.email "maplemediacanada@gmail.com"`);
+          shell.exec(`git config --global core.editor /usr/bin/vim`);
           shell.exec(`git checkout -b Scrimshaw-${appVersion}`);
           shell.exec(`git add --all`);
-          shell.exec(`git commit -a -m "Scrimshaw:[${appVersion}]:[${process.env.BITRISE_GIT_MESSAGE}]"`);
+          shell.exec(`git commit -a -m 'Scrimshaw:[${appVersion}]:[${process.env.BITRISE_GIT_MESSAGE}]'`);
   
           // Append BETA SCRIMSHAW to tag.
           shell.exec(`git tag -a ${appVersion}.B.S`);
