@@ -33,7 +33,7 @@ async function main() {
           var appVersion = loadedPlist['CFBundleShortVersionString'];
 
           // Pushing the B tag will auto-trigger a publish workflow with this version.
-          shell.pushd(process.env.BITRISE_SOURCE_DIR + IBC.proj_path);
+          shell.pushd(process.env.BITRISE_SOURCE_DIR + "/" + IBC.proj_path);
           shell.exec(`git push --tags --set-upstream origin Scrimshaw-${appVersion}`);
 
           // Publish the PR using Github API
