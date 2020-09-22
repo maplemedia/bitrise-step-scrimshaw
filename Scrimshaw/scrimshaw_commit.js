@@ -4,6 +4,7 @@ if (dotEnvResult.error) {
 }
 
 const exec_cmd = require("./exec_cmd");
+var shell = require('shelljs');
 
 async function main() {
     var result =
@@ -16,9 +17,18 @@ async function main() {
     IBC = ibcLoader.loadIBC();
 
     if (IBC.hasOwnProperty('xcodeproj_path')) {
+        shell.pushd(process.env.BITRISE_SOURCE_DIR + IBC.proj_path);
+        shell.exec(`fastlane add_plugin versioning`);
+        shell.exec(`fastlane run increment_version_number_in_xcodeproj bump_type:"patch" xcodeproj:"${IBC.xcodeproj_path}"`);
+        shell.exec(`fastlane run increment_build_number`);
+        shell.exec(`fastlane run increment_build_number`);
+        var newVersion = exec(`fastlane run get_version_number xcodeproj:"${IBC.xcodeproj_path}"`, {silent:true}).stdout;
+        console.log(`newVersion:${newVersion}`);
+
+
         // Create a new branch for this build and commit all of the scrimshaw modifications to it.
         // If the build succeeds, the scrimshaw_push step will push all these changes to github.
-        await exec_cmd.execShellCommandProjDir(`fastlane add_plugin versioning`, IBC);
+        /*await exec_cmd.execShellCommandProjDir(`fastlane add_plugin versioning`, IBC);
         await exec_cmd.execShellCommandProjDir(`fastlane run increment_version_number_in_xcodeproj bump_type:"patch" xcodeproj:"${IBC.xcodeproj_path}"`, IBC);
         await exec_cmd.execShellCommandProjDir(`fastlane run increment_build_number`, IBC);
         var newVersion = await exec_cmd.execShellCommandProjDir(`fastlane run get_version_number xcodeproj:"${IBC.xcodeproj_path}"`, IBC);
@@ -29,7 +39,7 @@ async function main() {
         await exec_cmd.execShellCommandSourceDir(`git commit -a -m "Scrimshaw:[${newVersion}]" -m "msg:[${process.env.BITRISE_GIT_MESSAGE}]"`);
 
         // Append BETA SCRIMSHAW to tag.
-        await exec_cmd.execShellCommandSourceDir(`git tag -a ${newVersion}.B.S`);
+        await exec_cmd.execShellCommandSourceDir(`git tag -a ${newVersion}.B.S`);*/
     } else {
         result.isValid = false;
         result.errors.push('Missing xcodeproj_path in IBC');
