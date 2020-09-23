@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "scrimshaw_entry",
+            "program": "${workspaceFolder}/Scrimshaw/scrimshaw_entry.js",
+            "type": "node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
             "name": "scrimshaw_validate",
             "program": "${workspaceFolder}/Scrimshaw/scrimshaw_validate.js",
             "type": "node",

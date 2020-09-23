@@ -59,3 +59,5 @@ async function applyiOSIBC() {
 
   return 0;
 })();
+
+module.exports = { applyIBC };

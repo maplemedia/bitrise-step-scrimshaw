@@ -42,3 +42,5 @@ async function validateIBC() {
 
     return 0;
 })();
+
+module.exports = { validateIBC };

@@ -76,6 +76,14 @@ inputs:
       is_expand: true
       is_required: true
       value_options: []
+  - substep: "validate"
+  opts:
+    title: Tells scrimshaw step which substep to use
+    value_options:
+    - "validate"
+    - "apply"
+    - "commit"
+    - "push"
 
 #outputs:
 #  - EXAMPLE_STEP_OUTPUT:

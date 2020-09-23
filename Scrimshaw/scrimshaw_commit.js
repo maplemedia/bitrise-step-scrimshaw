@@ -8,7 +8,7 @@ const plist = require('plist');
 const semver = require('semver');
 const fs = require('fs');
 
-async function main() {
+async function commitChanges() {
     var result =
     {
         isValid: true,
@@ -78,7 +78,7 @@ async function main() {
 
 (async () => {
     try {
-      await main();
+      await commitChanges();
     }
     catch (e) {
       console.log(e);
@@ -97,3 +97,5 @@ async function main() {
   
     return 0;
   })();
+  
+  module.exports = { commitChanges };

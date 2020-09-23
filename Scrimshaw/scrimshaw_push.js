@@ -12,7 +12,7 @@ const fs = require('fs');
 const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
 axiosGithub.defaults.headers.common["Authorization"] = `token ` + process.env.GITHUB_TOKEN;
 
-async function main() {
+async function pushAndCreatePR() {
     var result =
     {
         isValid: true,
@@ -77,7 +77,7 @@ async function main() {
 
 (async () => {
     try {
-      await main();
+      await pushAndCreatePR();
     }
     catch (e) {
       console.log(e);
