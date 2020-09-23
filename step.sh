@@ -9,7 +9,7 @@ cd ${THIS_SCRIPT_DIR}/Scrimshaw/
 
 # install dependencies and run Scrimshaw nodejs.
 yarn install
-node scrimshaw_commit.js
+node scrimshaw_push.js
 
 #
 # --- Export Environment Variables for other Steps:
