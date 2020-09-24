@@ -37,8 +37,6 @@ if (dotEnvResult.error) {
         }
 
         // Return error.
-        process.exitCode = 1;
+        process.exit(1);
     }
-
-    process.exitCode = 0;
 })();
