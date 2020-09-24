@@ -61,7 +61,7 @@ async function commitChanges() {
         var getBundleVersion = shell.exec(`sed -n '/CURRENT_PROJECT_VERSION/{s/CURRENT_PROJECT_VERSION = //;s/;//;s/^[[:space:]]*//;p;q;}' ${process.env.BITRISE_SOURCE_DIR}/${IBC.xcodeproj_path}/project.pbxproj`);
         if (getBundleVersion.code === 0) {
           bundleVersionValue = getBundleVersion.stdout;
-          bundleVersionValue = appVersion.replace('\n', '');
+          bundleVersionValue = getBundleVersion.replace('\n', '');
         } else {
           result.isValid = false;
           result.errors.push(`Unable to fetch app version from plist and xcode. stderr:${getAppVersion.stderr}`);
@@ -70,7 +70,7 @@ async function commitChanges() {
       }
 
       var bundleVersion = parseInt(bundleVersionValue);
-      console.log(`Increasing bundle version [${bundleVersion}->${bundleVersion + 1}]`);
+      console.log(`Increasing bundle version [${loadedPlist['CFBundleVersion']}->${bundleVersion + 1}]`);
       bundleVersion++;
       loadedPlist['CFBundleVersion'] = bundleVersion.toString();
     } else {
