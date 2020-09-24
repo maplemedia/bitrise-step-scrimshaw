@@ -54,7 +54,22 @@ async function commitChanges() {
 
     // Increment bundle version.
     if (loadedPlist.hasOwnProperty('CFBundleVersion')) {
-      var bundleVersion = parseInt(loadedPlist['CFBundleVersion']);
+      var bundleVersionValue = loadedPlist['CFBundleVersion'];
+      if (bundleVersionValue === "$(CURRENT_PROJECT_VERSION)") {
+        // Fetch bundleVersionValue from xcode.
+        // ref: https://stackoverflow.com/questions/56722677/how-to-read-current-app-version-in-xcode-11-with-script/
+        var getBundleVersion = shell.exec(`sed -n '/CURRENT_PROJECT_VERSION/{s/CURRENT_PROJECT_VERSION = //;s/;//;s/^[[:space:]]*//;p;q;}' ${process.env.BITRISE_SOURCE_DIR}/${IBC.xcodeproj_path}/project.pbxproj`);
+        if (getBundleVersion.code === 0) {
+          bundleVersionValue = getBundleVersion.stdout;
+          bundleVersionValue = appVersion.replace('\n', '');
+        } else {
+          result.isValid = false;
+          result.errors.push(`Unable to fetch app version from plist and xcode. stderr:${getAppVersion.stderr}`);
+          throw result;
+        }
+      }
+
+      var bundleVersion = parseInt(bundleVersionValue);
       console.log(`Increasing bundle version [${bundleVersion}->${bundleVersion + 1}]`);
       bundleVersion++;
       loadedPlist['CFBundleVersion'] = bundleVersion.toString();
@@ -72,8 +87,8 @@ async function commitChanges() {
       // Create a new branch for this build and commit all of the scrimshaw modifications to it.
       // If the build succeeds, the scrimshaw_push step will push all these changes to github.
       shell.pushd(process.env.BITRISE_SOURCE_DIR + "/" + IBC.proj_path);
-      //if (shell.exec('git config --global user.name "MapleMediaMachine"').code !== 0) throw new Error('Failed to set git user.name');
-      //if (shell.exec('git config --global user.email "maplemediacanada@gmail.com"').code !== 0) throw new Error('Failed to set git user.email');
+      if (shell.exec('git config --global user.name "MapleMediaMachine"').code !== 0) throw new Error('Failed to set git user.name');
+      if (shell.exec('git config --global user.email "maplemediacanada@gmail.com"').code !== 0) throw new Error('Failed to set git user.email');
       if (shell.exec(`git checkout -b Scrimshaw-${appVersion}`).code !== 0) throw new Error('Failed to git checkout branch');
       if (shell.exec(`git add --all`).code !== 0) throw new Error('git failed to add all changes');
       if (shell.exec(`git commit -am "Scrimshaw:[${appVersion}]:[${process.env.BITRISE_GIT_MESSAGE}]"`).code !== 0) throw new Error('git failed to commit');
