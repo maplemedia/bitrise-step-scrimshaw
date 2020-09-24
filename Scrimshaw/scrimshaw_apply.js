@@ -39,7 +39,7 @@ async function applyiOSIBC() {
   }
 }
 
-(async () => {
+/*(async () => {
   try {
     await applyIBC();
   }
@@ -58,6 +58,6 @@ async function applyiOSIBC() {
   }
 
   return 0;
-})();
+})();*/
 
 module.exports = { applyIBC };

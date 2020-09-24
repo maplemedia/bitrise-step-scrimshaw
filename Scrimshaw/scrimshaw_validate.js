@@ -21,7 +21,7 @@ async function validateIBC() {
     return result;
 }
 
-(async () => {
+/*(async () => {
     try {
         await validateIBC();
         console.log('IBC is valid!');
@@ -41,6 +41,6 @@ async function validateIBC() {
     }
 
     return 0;
-})();
+})();*/
 
 module.exports = { validateIBC };

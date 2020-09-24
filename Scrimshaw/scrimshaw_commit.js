@@ -76,7 +76,7 @@ async function commitChanges() {
     }
 }
 
-(async () => {
+/*(async () => {
     try {
       await commitChanges();
     }
@@ -96,6 +96,6 @@ async function commitChanges() {
     }
   
     return 0;
-  })();
+  })();*/
   
   module.exports = { commitChanges };

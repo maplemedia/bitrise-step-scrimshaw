@@ -75,7 +75,7 @@ async function pushAndCreatePR() {
     }
 }
 
-(async () => {
+/*(async () => {
     try {
       await pushAndCreatePR();
     }
@@ -95,6 +95,6 @@ async function pushAndCreatePR() {
     }
   
     return 0;
-  })();
+  })();*/
 
   module.exports = { pushAndCreatePR };
