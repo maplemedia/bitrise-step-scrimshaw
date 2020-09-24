@@ -9,7 +9,8 @@ cd ${THIS_SCRIPT_DIR}/Scrimshaw/
 
 # install dependencies and run Scrimshaw nodejs.
 yarn install --ignore-engines
-node scrimshaw_entry.js
+ret=$(node scrimshaw_entry.js)
+exit ret
 
 #
 # --- Export Environment Variables for other Steps:
