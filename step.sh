@@ -8,7 +8,7 @@ THIS_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd ${THIS_SCRIPT_DIR}/Scrimshaw/
 
 # install dependencies and run Scrimshaw nodejs.
-yarn install
+yarn install --ignore-engines
 node scrimshaw_entry.js
 
 #

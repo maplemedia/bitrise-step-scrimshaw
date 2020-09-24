@@ -96,3 +96,5 @@ async function pushAndCreatePR() {
   
     return 0;
   })();
+
+  module.exports = { pushAndCreatePR };
