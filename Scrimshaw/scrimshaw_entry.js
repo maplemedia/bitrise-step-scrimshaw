@@ -36,10 +36,9 @@ if (dotEnvResult.error) {
             }
         }
 
-        // Throw to bitrise
-        //throw e;
-        return -1;
+        // Return error.
+        process.exitCode = 1;
     }
 
-    return 0;
+    process.exitCode = 0;
 })();
