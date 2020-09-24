@@ -18,6 +18,7 @@ async function validateIBC() {
         throw result;
     }
 
+    console.log('IBC is valid!');
     return result;
 }
 

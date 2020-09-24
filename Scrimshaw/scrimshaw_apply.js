@@ -21,6 +21,7 @@ async function applyIBC() {
       await applyiOSIBC();
       break;
   }
+  console.log('IBC is applied!');
 }
 
 function applyAndroidIBC() {

@@ -57,6 +57,17 @@ function applyIBCToPlist(IBC) {
     return result;
 }
 
+function recursiveReplace(obj, key, val){
+    Object.keys(obj).forEach(function(k){
+        if(k === key) {
+            console.log(`Patching [${key}]:[${val}].`);
+            obj[k] = val;
+        } else if (typeof obj[k] == 'object') {
+            recursiveReplace(obj[k], key, val);
+        }
+    });
+}
+
 async function applyIBCToPodfile(IBC) {
     var result =
     {
@@ -77,12 +88,7 @@ async function applyIBCToPodfile(IBC) {
         // Apply for every podfile target.
         for (var podfileTarget of IBC.podfile_targets) {
             // HACK: Turn the uses_frameworks hash into a boolean. cocoapods causes an error otherwise.
-            for (var child of jsonPodfile.target_definitions[0].children) {
-                if (child.hasOwnProperty('uses_frameworks')) {
-                    console.log(`HACK: Patching uses_frameworks of [${child.name}] to boolean.`);
-                    child['uses_frameworks'] = true;
-                }
-            }
+            recursiveReplace(jsonPodfile.target_definitions[0], 'uses_frameworks', true);
 
             // Find root for this target.
             var targetDefinition = jsonPodfile.target_definitions[0].children.find(element => element.name === podfileTarget);
