@@ -23,18 +23,19 @@ if (dotEnvResult.error) {
                     const pushStep = require("./scrimshaw_push");
                     await pushStep.pushAndCreatePR();
                     break;
+                case "bitrise":
+                    const bitriseStep = require("./scrimshaw_bitrise");
+                    await bitriseStep.listApps();
+                    break;
+                case "slack":
+                    const slackStep = require("./scrimshaw_slack");
+                    await slackStep.postMessage("testing");
+                    break;
             }
         }
     }
     catch (e) {
-        console.log(e);
-
-        if (e.hasOwnProperty('errors')) {
-            console.log("Errors:")
-            for (var i = 0; i < e.errors.length; i++) {
-                console.log(e.errors[i]);
-            }
-        }
+        await slackStep.reportException(e);
 
         // Return error.
         process.exit(1);

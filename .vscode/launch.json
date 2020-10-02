@@ -12,42 +12,6 @@
             "skipFiles": [
                 "<node_internals>/**"
             ]
-        },
-        {
-            "name": "scrimshaw_validate",
-            "program": "${workspaceFolder}/Scrimshaw/scrimshaw_validate.js",
-            "type": "node",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ]
-        },
-        {
-            "name": "scrimshaw_apply",
-            "program": "${workspaceFolder}/Scrimshaw/scrimshaw_apply.js",
-            "type": "node",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ]
-        },
-        {
-            "name": "scrimshaw_commit",
-            "program": "${workspaceFolder}/Scrimshaw/scrimshaw_commit.js",
-            "type": "node",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ]
-        },
-        {
-            "name": "scrimshaw_push",
-            "program": "${workspaceFolder}/Scrimshaw/scrimshaw_push.js",
-            "type": "node",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ]
         }
     ]
 }
