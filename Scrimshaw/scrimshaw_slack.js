@@ -24,22 +24,26 @@ async function postMessage(message) {
 }
 
 async function reportException(e){
-    const ibcLoader = require("./scrimshaw_ibc");
-    IBC = ibcLoader.loadIBC();
-    var prettyErrors = `:boom:${IBC.app_name}:boom:\n
-    Scrimshaw has encountered an error while building:\n
-    exception:[${e.message}]\n`;
-    console.log(e);
-
-    if (e.hasOwnProperty('errors')) {
-        prettyErrors += "\nErrors:\n----------\n";
-        console.log("Errors:")
-        for (var i = 0; i < e.errors.length; i++) {
-            prettyErrors += `${i}:${e.errors[i]}\n`;
-            console.log(e.errors[i]);
+    try{
+        const ibcLoader = require("./scrimshaw_ibc");
+        IBC = ibcLoader.loadIBC();
+        var prettyErrors = `:boom:${IBC.app_name}:boom:\n
+        Scrimshaw has encountered an error while building:\n
+        exception:[${e.message}]\n`;
+        console.log(e);
+    
+        if (e.hasOwnProperty('errors')) {
+            prettyErrors += "\nErrors:\n----------\n";
+            console.log("Errors:")
+            for (var i = 0; i < e.errors.length; i++) {
+                prettyErrors += `${i}:${e.errors[i]}\n`;
+                console.log(e.errors[i]);
+            }
         }
+        postMessage(prettyErrors);
+    } catch (slackException) {
+        console.log(slackException);
     }
-    postMessage(prettyErrors);
 }
 
 module.exports = { reportException };
