@@ -27,6 +27,10 @@ if (dotEnvResult.error) {
                     const bitriseStep = require("./scrimshaw_bitrise");
                     await bitriseStep.listApps();
                     break;
+                case "slack":
+                    const slackStep = require("./scrimshaw_slack");
+                    await slackStep.postMessage("testing");
+                    break;
             }
         }
     }

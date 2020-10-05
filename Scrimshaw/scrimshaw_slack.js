@@ -28,8 +28,8 @@ async function reportException(e){
         const ibcLoader = require("./scrimshaw_ibc");
         IBC = ibcLoader.loadIBC();
         var prettyErrors = `:boom:${IBC.app_name}:boom:\n
-        Scrimshaw has encountered an error while building:\n
-        exception:[${e.message}]\n`;
+Scrimshaw has encountered an error while building:\n
+exception:${e.message}\n`;
         console.log(e);
     
         if (e.hasOwnProperty('errors')) {
@@ -40,10 +40,10 @@ async function reportException(e){
                 console.log(e.errors[i]);
             }
         }
-        postMessage(prettyErrors);
+        await postMessage(prettyErrors);
     } catch (slackException) {
         console.log(slackException);
     }
 }
 
-module.exports = { reportException };
+module.exports = { postMessage, reportException };
