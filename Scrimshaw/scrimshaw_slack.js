@@ -23,7 +23,7 @@ async function postMessage(message) {
         });
 }
 
-async function reportException(errors){
+async function reportException(e){
     const ibcLoader = require("./scrimshaw_ibc");
     IBC = ibcLoader.loadIBC();
     var prettyErrors = `:boom:${IBC.app_name}:boom:\n
