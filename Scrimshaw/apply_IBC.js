@@ -17,6 +17,30 @@ function applyIBCToPlist(IBC) {
 
     var plistToApply = [];
 
+    // Get ad bidder plist values.
+    for (var moduleConfig of IBC.modules) {
+        if (moduleConfig.hasOwnProperty('ad_bidders')) {
+            for (var adBidderConfig of moduleConfig.ad_bidders) {
+                if (adBidderConfig.hasOwnProperty('id')) {
+                    // Get ad network id name from definition.
+                    const adBidderDefinition = ibcLoader.getAdBidderDefinition(moduleConfig.definition, IBC.platform, adBidderConfig.name);
+
+                    if (adBidderDefinition.hasOwnProperty('id')) {
+                        plistToApply.push(
+                            {
+                                "key": adBidderDefinition.id,
+                                "value": adBidderConfig.id
+                            });
+                    }
+                    else {
+                        result.success = false;
+                        result.errors.push(`Missing 'adBidderDefinition.id' for ad config network ${moduleConfig.name}:${adBidderConfig.name}`);
+                    }
+                }
+            }
+        }
+    }
+
     // Get ad network plist values.
     for (var moduleConfig of IBC.modules) {
         if (moduleConfig.hasOwnProperty('ad_networks')) {
@@ -146,12 +170,29 @@ async function applyIBCToPodfile(IBC) {
                     // specifically otherwise it includes all of its submodules. We rather only include the array of submodules so
                     // we can have exact lists.
                     if (moduleConfig.hasOwnProperty('ad_networks')) {
+                        // Ad bidder definitions.
+                        for (var adBidderConfig of moduleConfig.ad_bidders) {
+                            // Add ad network subspecs.
+                            var newDependency = {};
+                            newDependency[`${platformModuleDefinition.library_name}/${adBidderConfig.name}`] = [moduleConfig.version];
+                            targetDefinition.dependencies.push(newDependency);
+                            console.log(`Adding subspec bidder dependency [${Object.keys(newDependency)[0]}]:${moduleConfig.version}`);
+
+                            // New podfile sources.
+                            if (adBidderConfig.hasOwnProperty('source')) {
+                                if (!ivoryPodfileSources.includes(adBidderConfig.source)) {
+                                    ivoryPodfileSources.push(adBidderConfig.source);
+                                }
+                            }
+                        }
+
+                        // Ad network definitions.
                         for (var adNetworkConfig of moduleConfig.ad_networks) {
                             // Add ad network subspecs.
                             var newDependency = {};
                             newDependency[`${platformModuleDefinition.library_name}/${adNetworkConfig.name}`] = [moduleConfig.version];
                             targetDefinition.dependencies.push(newDependency);
-                            console.log(`Adding subspec dependency [${Object.keys(newDependency)[0]}]:${moduleConfig.version}`);
+                            console.log(`Adding subspec network dependency [${Object.keys(newDependency)[0]}]:${moduleConfig.version}`);
 
                             // New podfile sources.
                             if (adNetworkConfig.hasOwnProperty('source')) {

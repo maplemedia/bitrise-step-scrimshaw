@@ -1,4 +1,3 @@
-
 function validateAdsModule(IBC, moduleConfig) {
     const ibcLoader = require("./scrimshaw_ibc");
 
@@ -8,7 +7,26 @@ function validateAdsModule(IBC, moduleConfig) {
         errors: []
     };
 
-    // Validate network exists and if the required ID is 
+    // Validate ad bidders exist and if their required IDs are present.
+    if (moduleConfig.hasOwnProperty('ad_bidders')){
+        for (var i = 0; i < moduleConfig.ad_bidders.length; i++) {
+            var adBidderConfig = moduleConfig.ad_bidders[i];
+            const adBidderDefinition = ibcLoader.getAdBidderDefinition(moduleConfig.definition, IBC.platform, adBidderConfig.name);
+    
+            if (adBidderDefinition) {
+                // Check if this bidder requires an ID and it is missing.
+                if (adBidderDefinition.hasOwnProperty('id') && !adBidderConfig.hasOwnProperty('id')) {
+                    result.isValid = false;
+                    result.errors.push(`${moduleConfig.name}: Ad network [${adBidderConfig.name}] is missing an 'id' value in IBC to fulfil [${adBidderDefinition.id}].`);
+                }
+            } else {
+                result.isValid = false;
+                result.errors.push(`[${adBidderConfig.name}] not found in module definition specified in IBC.`);
+            }
+        }
+    }
+
+    // Validate networks exist and if their required IDs are present.
     for (var i = 0; i < moduleConfig.ad_networks.length; i++) {
         var adNetworkConfig = moduleConfig.ad_networks[i];
         const adNetworkDefinition = ibcLoader.getAdNetworkDefinition(moduleConfig.definition, IBC.platform, adNetworkConfig.name);
@@ -18,11 +36,6 @@ function validateAdsModule(IBC, moduleConfig) {
             if (adNetworkDefinition.hasOwnProperty('id') && !adNetworkConfig.hasOwnProperty('id')) {
                 result.isValid = false;
                 result.errors.push(`${moduleConfig.name}: Ad network [${adNetworkConfig.name}] is missing an 'id' value in IBC to fulfil [${adNetworkDefinition.id}].`);
-            }
-            
-            // Add the definitions source if it exists.
-            if (adNetworkDefinition.hasOwnProperty('source')) {
-                adNetworkConfig.source = adNetworkDefinition.source;
             }
         } else {
             result.isValid = false;

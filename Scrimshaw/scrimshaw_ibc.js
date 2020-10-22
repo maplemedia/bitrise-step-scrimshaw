@@ -9,6 +9,15 @@ const axios = require("axios");
 const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
 axiosGithub.defaults.headers.common["Authorization"] = `token ` + process.env.GITHUB_TOKEN;
 
+function getAdBidderDefinition(moduleDefinition, platform, adBidderName) {
+    const platformModuleDefinition = getModuleDefinitionForPlatform(moduleDefinition, platform);
+    if(platformModuleDefinition.hasOwnProperty('ad_bidders')){
+      return platformModuleDefinition.ad_bidders.find(element => element.name === adBidderName);
+    } else {
+      return null;
+    }
+}
+
 function getAdNetworkDefinition(moduleDefinition, platform, adNetworkName) {
     const platformModuleDefinition = getModuleDefinitionForPlatform(moduleDefinition, platform);
     return platformModuleDefinition.ad_networks.find(element => element.name === adNetworkName);
@@ -79,4 +88,4 @@ function loadIBC() {
     return JSON.parse(rawBuildConfig);
 }
 
-module.exports = { loadIBC, attachDefinitions, getAdNetworkDefinition, getModuleDefinitionForPlatform };
+module.exports = { loadIBC, attachDefinitions, getAdBidderDefinition, getAdNetworkDefinition, getModuleDefinitionForPlatform };
