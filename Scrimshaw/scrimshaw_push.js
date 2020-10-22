@@ -60,6 +60,10 @@ async function pushAndCreatePR() {
           .then(function () {
       
           });
+
+          // Start the publish build for this BETA tag.
+          const bitrise = require("./scrimshaw_bitrise");
+          bitrise.startBuild(appVersion);
         } else {
           result.isValid = false;
           result.errors.push(`Cannot find CFBundleShortVersionString key in app's plist at:[${filePath}]`);
