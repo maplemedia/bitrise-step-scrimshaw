@@ -61,9 +61,16 @@ async function pushAndCreatePR() {
       
           });
 
-          // Start the publish build for this BETA tag.
+          // Start the publish build for this .B.S tag.
           const bitrise = require("./scrimshaw_bitrise");
-          bitrise.startBuild(appVersion);
+          await bitrise.startBuild(`${appVersion}.B.S`);
+
+          // Post slack message that the PR has been created and build has started.
+          var slackMessage = `:memo:${IBC.app_name} pull request has been created:\nhttps://github.com/${IBC.github_owner}/${IBC.github_repo}/pulls\n`;
+          slackMessage += `Publish build for app version [${appVersion}.B.S] has started on github using the [${IBC.bitrise_publish_workflow}] workflow.`;
+
+          const slackStep = require("./scrimshaw_slack");
+          await slackStep.postMessage(slackMessage);
         } else {
           result.isValid = false;
           result.errors.push(`Cannot find CFBundleShortVersionString key in app's plist at:[${filePath}]`);
