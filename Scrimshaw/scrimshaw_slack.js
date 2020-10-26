@@ -4,7 +4,7 @@ const axiosSlack = axios.create({ baseURL: "https://slack.com/api/" });
 
 async function postMessage(message) {
     // Prevent message?
-    if (process.env.hasOwnProperty('BLOCK_SLACK_REPORTS') && process.env.BLOCK_SLACK_REPORTS)
+    if (process.env.hasOwnProperty('BLOCK_SLACK_REPORTS') && process.env.BLOCK_SLACK_REPORTS == true)
     {
         console.log(message);
         return;
