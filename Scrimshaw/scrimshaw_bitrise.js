@@ -1,7 +1,5 @@
 const ibcLoader = require("./scrimshaw_ibc");
 const axios = require("axios");
-const axiosBitrise = axios.create({ baseURL: "https://api.bitrise.io/v0.1" });
-axiosBitrise.defaults.headers.common["Authorization"] = process.env.BITRISE_TOKEN;
 
 async function listApps() {
   var apps = [];
@@ -10,6 +8,9 @@ async function listApps() {
     sort_by:"last_build_at"
   };
   
+  const IBC = ibcLoader.loadIBC();
+  const axiosBitrise = axios.create({ baseURL: "https://api.bitrise.io/v0.1" });
+  axiosBitrise.defaults.headers.common["Authorization"] = IBC.bitrise_token;
   await axiosBitrise
     .get(`/apps`, args)
     .then(function(response) {
@@ -32,7 +33,35 @@ async function listApps() {
   return apps;
 }
 
-async function startBuild(tag) {
+async function startWorkflow(workflow) {
+  const args = {
+    build_params: {
+      workflow_id: workflow
+    },
+    hook_info: {
+      type: "bitrise"
+    },
+  };
+
+  var result;
+  const IBC = ibcLoader.loadIBC();
+  const axiosBitrise = axios.create({ baseURL: "https://api.bitrise.io/v0.1" });
+  axiosBitrise.defaults.headers.common["Authorization"] = IBC.bitrise_token;
+  await axiosBitrise
+    .post(`/apps/${IBC.bitrise_slug}/builds`, args)
+    .then(function({ data }) {
+      console.log("Success:" + JSON.stringify(data));
+      result = data;
+    })
+    .catch(function(error) {
+      console.log("Error:" + error.message);
+      throw(error);
+    });
+
+  return result;
+}
+
+async function startBuildWithTag(tag) {
   const IBC = ibcLoader.loadIBC();
   const args = {
     build_params: {
@@ -53,6 +82,8 @@ async function startBuild(tag) {
   };
 
   var result;
+  const axiosBitrise = axios.create({ baseURL: "https://api.bitrise.io/v0.1" });
+  axiosBitrise.defaults.headers.common["Authorization"] = IBC.bitrise_token;
   await axiosBitrise
     .post(`/apps/${IBC.bitrise_slug}/builds`, args)
     .then(function({ data }) {
@@ -67,4 +98,4 @@ async function startBuild(tag) {
   return result;
 }
 
-module.exports = { listApps, startBuild };
+module.exports = { listApps, startBuildWithTag, startWorkflow };

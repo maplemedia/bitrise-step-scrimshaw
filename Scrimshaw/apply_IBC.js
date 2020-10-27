@@ -171,17 +171,20 @@ async function applyIBCToPodfile(IBC) {
                     // we can have exact lists.
                     if (moduleConfig.hasOwnProperty('ad_networks')) {
                         // Ad bidder definitions.
-                        for (var adBidderConfig of moduleConfig.ad_bidders) {
-                            // Add ad network subspecs.
-                            var newDependency = {};
-                            newDependency[`${platformModuleDefinition.library_name}/${adBidderConfig.name}`] = [moduleConfig.version];
-                            targetDefinition.dependencies.push(newDependency);
-                            console.log(`Adding subspec bidder dependency [${Object.keys(newDependency)[0]}]:${moduleConfig.version}`);
+                        
+                        if (moduleConfig.hasOwnProperty('ad_bidders')) {
+                            for (var adBidderConfig of moduleConfig.ad_bidders) {
+                                // Add ad network subspecs.
+                                var newDependency = {};
+                                newDependency[`${platformModuleDefinition.library_name}/${adBidderConfig.name}`] = [moduleConfig.version];
+                                targetDefinition.dependencies.push(newDependency);
+                                console.log(`Adding subspec bidder dependency [${Object.keys(newDependency)[0]}]:${moduleConfig.version}`);
 
-                            // New podfile sources.
-                            if (adBidderConfig.hasOwnProperty('source')) {
-                                if (!ivoryPodfileSources.includes(adBidderConfig.source)) {
-                                    ivoryPodfileSources.push(adBidderConfig.source);
+                                // New podfile sources.
+                                if (adBidderConfig.hasOwnProperty('source')) {
+                                    if (!ivoryPodfileSources.includes(adBidderConfig.source)) {
+                                        ivoryPodfileSources.push(adBidderConfig.source);
+                                    }
                                 }
                             }
                         }

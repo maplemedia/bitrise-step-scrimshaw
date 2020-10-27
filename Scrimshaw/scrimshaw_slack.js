@@ -3,6 +3,9 @@ const e = require("express");
 const axiosSlack = axios.create({ baseURL: "https://slack.com/api/" });
 
 async function postMessage(message) {
+    const ibcLoader = require("./scrimshaw_ibc");
+    IBC = ibcLoader.loadIBC();
+
     // Prevent message?
     if (process.env.hasOwnProperty('BLOCK_SLACK_REPORTS') && process.env.BLOCK_SLACK_REPORTS == true)
     {
@@ -13,11 +16,11 @@ async function postMessage(message) {
     await axiosSlack
         .post(`/chat.postMessage`,
         {
-            channel: '#alerts_builds',
+            channel: IBC.slack_channel,
             text: message
         },
         {
-            headers: { authorization: `Bearer ${process.env.SLACK_TOKEN}` }
+            headers: { authorization: `Bearer ${IBC.slack_token}` }
         })
         .then(function (response) {
             console.log(response);

@@ -5,10 +5,6 @@ if (dotEnvResult.error) {
 
 const axios = require("axios");
 
-// Download module definitions from github.
-const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
-axiosGithub.defaults.headers.common["Authorization"] = `token ` + process.env.GITHUB_TOKEN;
-
 function getAdBidderDefinition(moduleDefinition, platform, adBidderName) {
     const platformModuleDefinition = getModuleDefinitionForPlatform(moduleDefinition, platform);
     if(platformModuleDefinition.hasOwnProperty('ad_bidders')){
@@ -29,15 +25,17 @@ function getModuleDefinitionForPlatform(moduleDefinition, platform) {
 
 async function attachDefinitions(IBC) {
     for (var moduleConfig of IBC.modules) {
-        const moduleDefinition = await fetchModuleDefinition(moduleConfig);
+        const moduleDefinition = await fetchModuleDefinition(moduleConfig, IBC.github_token);
 
         // Attach the config's definition.
         moduleConfig.definition = moduleDefinition;
     }
 }
 
-async function fetchModuleDefinition(moduleConfig) {
+async function fetchModuleDefinition(moduleConfig, github_token) {
     var moduleDefinition;
+    const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
+    axiosGithub.defaults.headers.common["Authorization"] = `token ` + github_token;
     await axiosGithub.get(`/repos/maplemedia/${moduleConfig.name}/contents/ivory_module_definition.json`,
     {
         params:

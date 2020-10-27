@@ -31,6 +31,10 @@ if (dotEnvResult.error) {
                     const slackStep = require("./scrimshaw_slack");
                     await slackStep.postMessage("testing");
                     break;
+                case "scrimshaw":
+                    const scrimshawStep = require("./scrimshaw_bitrise");
+                    await scrimshawStep.startWorkflow("Scrimshaw");
+                    break;
             }
         }
     }

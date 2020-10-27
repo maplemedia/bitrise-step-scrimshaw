@@ -8,10 +8,6 @@ const plist = require('plist');
 const axios = require("axios");
 const fs = require('fs');
 
-// Download module definitions from github.
-const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
-axiosGithub.defaults.headers.common["Authorization"] = `token ` + process.env.GITHUB_TOKEN;
-
 async function pushAndCreatePR() {
     var result =
     {
@@ -38,6 +34,8 @@ async function pushAndCreatePR() {
 
           // Publish the PR using Github API
           // Ref: https://docs.github.com/en/rest/reference/pulls
+          const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
+          axiosGithub.defaults.headers.common["Authorization"] = `token ` + IBC.github_token;
           await axiosGithub.post(`/repos/${IBC.github_owner}/${IBC.github_repo}/pulls`,
           {
               // Required. The title of the new pull request.
@@ -63,7 +61,7 @@ async function pushAndCreatePR() {
 
           // Start the publish build for this .B.S tag.
           const bitrise = require("./scrimshaw_bitrise");
-          await bitrise.startBuild(`${appVersion}.B.S`);
+          await bitrise.startBuildWithTag(`${appVersion}.B.S`);
 
           // Post slack message that the PR has been created and build has started.
           var slackMessage = `:memo:${IBC.app_name} pull request has been created:\nhttps://github.com/${IBC.github_owner}/${IBC.github_repo}/pulls\n`;
