@@ -48,7 +48,7 @@ async function startWorkflow(workflow) {
   const axiosBitrise = axios.create({ baseURL: "https://api.bitrise.io/v0.1" });
   axiosBitrise.defaults.headers.common["Authorization"] = IBC.bitrise_token;
   await axiosBitrise
-    .post(`/apps/${IBC.bitrise_slug}/builds`, args)
+    .post(`/apps/${process.env.BITRISE_APP_SLUG}/builds`, args)
     .then(function({ data }) {
       console.log("Success:" + JSON.stringify(data));
       result = data;
@@ -85,7 +85,7 @@ async function startBuildWithTag(tag) {
   const axiosBitrise = axios.create({ baseURL: "https://api.bitrise.io/v0.1" });
   axiosBitrise.defaults.headers.common["Authorization"] = IBC.bitrise_token;
   await axiosBitrise
-    .post(`/apps/${IBC.bitrise_slug}/builds`, args)
+    .post(`/apps/${process.env.BITRISE_APP_SLUG}/builds`, args)
     .then(function({ data }) {
       console.log("Success:" + JSON.stringify(data));
       result = data;

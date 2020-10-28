@@ -106,26 +106,4 @@ async function commitChanges() {
   }
 }
 
-/*(async () => {
-    try {
-      await commitChanges();
-    }
-    catch (e) {
-      console.log(e);
-  
-      if (e.hasOwnProperty('errors')) {
-        console.log("Errors:")
-        for (var i = 0; i < e.errors.length; i++) {
-          console.log(e.errors[i]);
-        }
-      }
-  
-      // Throw to bitrise
-      return -1;
-      //throw e;
-    }
-  
-    return 0;
-  })();*/
-
 module.exports = { commitChanges };

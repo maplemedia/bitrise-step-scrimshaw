@@ -19,7 +19,7 @@ async function pushAndCreatePR() {
     IBC = ibcLoader.loadIBC();
 
     // Only continue if we can push the PR to github. Otherwise, the push won't be as easy to merge.
-    if (IBC.hasOwnProperty('github_owner') && IBC.hasOwnProperty('github_repo')) {
+    if (process.env.hasOwnProperty('BITRISEIO_GIT_REPOSITORY_OWNER') && process.env.hasOwnProperty('BITRISEIO_GIT_REPOSITORY_SLUG')) {
         // After build has passed, push all of the commits Scrimshaw has done to this project.
         // Grab the version so we can put it in the PR title.
         const filePath = process.env.BITRISE_SOURCE_DIR + "/" + IBC.plist_path;
@@ -36,7 +36,7 @@ async function pushAndCreatePR() {
           // Ref: https://docs.github.com/en/rest/reference/pulls
           const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
           axiosGithub.defaults.headers.common["Authorization"] = `token ` + IBC.github_token;
-          await axiosGithub.post(`/repos/${IBC.github_owner}/${IBC.github_repo}/pulls`,
+          await axiosGithub.post(`/repos/${process.env.BITRISEIO_GIT_REPOSITORY_OWNER}/${process.env.BITRISEIO_GIT_REPOSITORY_SLUG}/pulls`,
           {
               // Required. The title of the new pull request.
               title: `Scrimshaw-${appVersion}`,
@@ -64,7 +64,7 @@ async function pushAndCreatePR() {
           await bitrise.startBuildWithTag(`${appVersion}.S`);
 
           // Post slack message that the PR has been created and build has started.
-          var slackMessage = `:memo:${IBC.app_name} pull request has been created:\nhttps://github.com/${IBC.github_owner}/${IBC.github_repo}/pulls\n`;
+          var slackMessage = `:memo:${process.env.BITRISE_APP_TITLE} pull request has been created:\nhttps://github.com/${process.env.BITRISEIO_GIT_REPOSITORY_OWNER}/${process.env.BITRISEIO_GIT_REPOSITORY_SLUG}/pulls\n`;
           slackMessage += `Publish build for app version [${appVersion}.S] has started on github using the [${IBC.bitrise_publish_workflow}] workflow.`;
 
           const slackStep = require("./scrimshaw_slack");
@@ -76,7 +76,7 @@ async function pushAndCreatePR() {
         
     } else {
         result.isValid = false;
-        result.errors.push('Missing values in IBC:[github_owner,github_repo]');
+        result.errors.push('Missing values in environment:[BITRISEIO_GIT_REPOSITORY_OWNER,BITRISEIO_GIT_REPOSITORY_SLUG]');
     }
 
     if (!result.isValid){
