@@ -59,13 +59,13 @@ async function pushAndCreatePR() {
       
           });
 
-          // Start the publish build for this .B.S tag.
+          // Start the publish build for this .S tag.
           const bitrise = require("./scrimshaw_bitrise");
-          await bitrise.startBuildWithTag(`${appVersion}.B.S`);
+          await bitrise.startBuildWithTag(`${appVersion}.S`);
 
           // Post slack message that the PR has been created and build has started.
           var slackMessage = `:memo:${IBC.app_name} pull request has been created:\nhttps://github.com/${IBC.github_owner}/${IBC.github_repo}/pulls\n`;
-          slackMessage += `Publish build for app version [${appVersion}.B.S] has started on github using the [${IBC.bitrise_publish_workflow}] workflow.`;
+          slackMessage += `Publish build for app version [${appVersion}.S] has started on github using the [${IBC.bitrise_publish_workflow}] workflow.`;
 
           const slackStep = require("./scrimshaw_slack");
           await slackStep.postMessage(slackMessage);

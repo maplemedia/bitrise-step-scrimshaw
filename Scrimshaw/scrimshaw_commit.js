@@ -94,7 +94,7 @@ async function commitChanges() {
       if (shell.exec(`git commit -am "Scrimshaw:[${appVersion}]:[${process.env.BITRISE_GIT_MESSAGE}]"`).code !== 0) throw new Error('git failed to commit');
 
       // Append BETA SCRIMSHAW to tag.
-      if (shell.exec(`git tag -a ${appVersion}.B.S -m "Auto tag"`).code !== 0) throw new Error(`git failed to tag commit`);
+      if (shell.exec(`git tag -a ${appVersion}.S -m "Auto tag"`).code !== 0) throw new Error(`git failed to tag commit`);
     }
   } else {
     result.isValid = false;
