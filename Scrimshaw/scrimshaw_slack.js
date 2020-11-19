@@ -24,7 +24,7 @@ async function postMessage(message) {
             text: message
         },
         {
-            headers: { authorization: `Bearer ${process.env.IBS.slack_token}` }
+            headers: { authorization: `Bearer ${JSON.parse(process.env.IBS).slack_token}` }
         })
         .then(function (response) {
             console.log(response);

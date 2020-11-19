@@ -35,7 +35,7 @@ async function pushAndCreatePR() {
           // Publish the PR using Github API
           // Ref: https://docs.github.com/en/rest/reference/pulls
           const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
-          axiosGithub.defaults.headers.common["Authorization"] = `token ` + process.env.IBS.github_token;
+          axiosGithub.defaults.headers.common["Authorization"] = `token ` + JSON.parse(process.env.IBS).github_token;
           await axiosGithub.post(`/repos/${process.env.BITRISEIO_GIT_REPOSITORY_OWNER}/${process.env.BITRISEIO_GIT_REPOSITORY_SLUG}/pulls`,
           {
               // Required. The title of the new pull request.
