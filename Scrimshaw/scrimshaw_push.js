@@ -35,7 +35,7 @@ async function pushAndCreatePR() {
           // Publish the PR using Github API
           // Ref: https://docs.github.com/en/rest/reference/pulls
           const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
-          axiosGithub.defaults.headers.common["Authorization"] = `token ` + IBC.github_token;
+          axiosGithub.defaults.headers.common["Authorization"] = `token ` + process.env.IBS.github_token;
           await axiosGithub.post(`/repos/${process.env.BITRISEIO_GIT_REPOSITORY_OWNER}/${process.env.BITRISEIO_GIT_REPOSITORY_SLUG}/pulls`,
           {
               // Required. The title of the new pull request.
@@ -83,27 +83,5 @@ async function pushAndCreatePR() {
         throw result;
     }
 }
-
-/*(async () => {
-    try {
-      await pushAndCreatePR();
-    }
-    catch (e) {
-      console.log(e);
-  
-      if (e.hasOwnProperty('errors')) {
-        console.log("Errors:")
-        for (var i = 0; i < e.errors.length; i++) {
-          console.log(e.errors[i]);
-        }
-      }
-  
-      // Throw to bitrise
-      //throw e;
-      return -1;
-    }
-  
-    return 0;
-  })();*/
 
   module.exports = { pushAndCreatePR };

@@ -1,5 +1,9 @@
 const ibcLoader = require("./scrimshaw_ibc");
 const axios = require("axios");
+const dotEnvResult = require('dotenv').config()
+if (dotEnvResult.error) {
+  throw dotEnvResult.error
+}
 
 async function listApps() {
   var apps = [];
@@ -10,7 +14,7 @@ async function listApps() {
   
   const IBC = ibcLoader.loadIBC();
   const axiosBitrise = axios.create({ baseURL: "https://api.bitrise.io/v0.1" });
-  axiosBitrise.defaults.headers.common["Authorization"] = IBC.bitrise_token;
+  axiosBitrise.defaults.headers.common["Authorization"] = process.env.IBS.bitrise_token;
   await axiosBitrise
     .get(`/apps`, args)
     .then(function(response) {
@@ -46,7 +50,7 @@ async function startWorkflow(workflow) {
   var result;
   const IBC = ibcLoader.loadIBC();
   const axiosBitrise = axios.create({ baseURL: "https://api.bitrise.io/v0.1" });
-  axiosBitrise.defaults.headers.common["Authorization"] = IBC.bitrise_token;
+  axiosBitrise.defaults.headers.common["Authorization"] = process.env.IBS.bitrise_token;
   await axiosBitrise
     .post(`/apps/${process.env.BITRISE_APP_SLUG}/builds`, args)
     .then(function({ data }) {
@@ -83,7 +87,7 @@ async function startBuildWithTag(tag) {
 
   var result;
   const axiosBitrise = axios.create({ baseURL: "https://api.bitrise.io/v0.1" });
-  axiosBitrise.defaults.headers.common["Authorization"] = IBC.bitrise_token;
+  axiosBitrise.defaults.headers.common["Authorization"] = process.env.IBS.bitrise_token;
   await axiosBitrise
     .post(`/apps/${process.env.BITRISE_APP_SLUG}/builds`, args)
     .then(function({ data }) {

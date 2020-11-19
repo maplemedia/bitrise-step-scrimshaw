@@ -25,17 +25,17 @@ function getModuleDefinitionForPlatform(moduleDefinition, platform) {
 
 async function attachDefinitions(IBC) {
     for (var moduleConfig of IBC.modules) {
-        const moduleDefinition = await fetchModuleDefinition(moduleConfig, IBC.github_token);
+        const moduleDefinition = await fetchModuleDefinition(moduleConfig);
 
         // Attach the config's definition.
         moduleConfig.definition = moduleDefinition;
     }
 }
 
-async function fetchModuleDefinition(moduleConfig, github_token) {
+async function fetchModuleDefinition(moduleConfig) {
     var moduleDefinition;
     const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
-    axiosGithub.defaults.headers.common["Authorization"] = `token ` + github_token;
+    axiosGithub.defaults.headers.common["Authorization"] = `token ` + process.env.IBS.github_token;
     await axiosGithub.get(`/repos/maplemedia/${moduleConfig.name}/contents/ivory_module_definition.json`,
     {
         params:

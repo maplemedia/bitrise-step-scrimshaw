@@ -67,7 +67,16 @@ toolkit:
 
 
 inputs:
-  - IBC: '{"scrimshaw_version":"0.0.1","modules":[{"name":"ivorysdk_core","version":"3.4.6.B"}]}'
+  - IBS: '{"github_token":"","bitrise_token":"","slack_token":""}'
+    opts:
+      title: "Ivory Build Secrets"
+      summary: Add the tokens required for API access.
+      description: |
+        Documentation: https://maplemedia.atlassian.net/wiki/spaces/MMT/pages/875986945/Ivory+Build+Config+File
+      is_expand: true
+      is_required: true
+      value_options: []
+  - IBC: '{"scrimshaw_version":"0.0.1","modules":[{"name":"ivorysdk_core","version":"3.6.0"}]}'
     opts:
       title: "Ivory Build Config"
       summary: Add your IBC.json value so it's validated and applied to the project.

@@ -1,6 +1,10 @@
 const axios = require("axios");
 const e = require("express");
 const axiosSlack = axios.create({ baseURL: "https://slack.com/api/" });
+const dotEnvResult = require('dotenv').config()
+if (dotEnvResult.error) {
+  throw dotEnvResult.error
+}
 
 async function postMessage(message) {
     const ibcLoader = require("./scrimshaw_ibc");
@@ -20,7 +24,7 @@ async function postMessage(message) {
             text: message
         },
         {
-            headers: { authorization: `Bearer ${IBC.slack_token}` }
+            headers: { authorization: `Bearer ${process.env.IBS.slack_token}` }
         })
         .then(function (response) {
             console.log(response);
