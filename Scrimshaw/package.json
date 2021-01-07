@@ -7,7 +7,7 @@
     "start": "node scrimshaw_apply.js"
   },
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "child_process": "^1.0.2",
     "dotenv": "^8.2.0",
