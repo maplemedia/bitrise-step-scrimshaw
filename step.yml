@@ -79,7 +79,7 @@ inputs:
   - IBC: '{"scrimshaw_version":"0.0.1","modules":[{"name":"ivorysdk_core","version":"3.6.0"}]}'
     opts:
       title: "Ivory Build Config"
-      summary: Add your IBC.json value so it's validated and applied to the project.
+      summary: Add your IBC.json value so it's validated and applied to the project. The IBC.json only requires the "platform" value for the publishIvory step.
       description: |
         Documentation: https://maplemedia.atlassian.net/wiki/spaces/MMT/pages/875986945/Ivory+Build+Config+File
       is_expand: true
@@ -93,6 +93,7 @@ inputs:
       - "apply"
       - "commit"
       - "push"
+      - "publishIvory"
 
 #outputs:
 #  - EXAMPLE_STEP_OUTPUT:

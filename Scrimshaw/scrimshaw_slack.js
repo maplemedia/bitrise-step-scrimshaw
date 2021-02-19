@@ -41,16 +41,13 @@ async function reportException(e) {
     const ibcLoader = require("./scrimshaw_ibc");
     IBC = ibcLoader.loadIBC();
     var prettyErrors = `:boom:${process.env.BITRISE_APP_TITLE}:boom:\n
-Scrimshaw has encountered an error while building:\n
-exception:${e.message}\n\nBuild URL:${process.env.BITRISE_BUILD_URL}\n`;
-    console.log(e);
+      Scrimshaw has encountered an error while building:\n
+      exception:${e.message}\n\nBuild URL:${process.env.BITRISE_BUILD_URL}\n`;
 
     if (e.hasOwnProperty("errors")) {
       prettyErrors += "\nErrors:\n----------\n";
-      console.log("Errors:");
       for (var i = 0; i < e.errors.length; i++) {
         prettyErrors += `${i}:${e.errors[i]}\n`;
-        console.log(e.errors[i]);
       }
     }
     await postMessage(prettyErrors);

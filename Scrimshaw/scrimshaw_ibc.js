@@ -3,8 +3,6 @@ if (dotEnvResult.error) {
   throw dotEnvResult.error;
 }
 
-const axios = require("axios");
-
 function getAdBidderDefinition(moduleDefinition, platform, adBidderName) {
   const platformModuleDefinition = getModuleDefinitionForPlatform(moduleDefinition, platform);
   if (platformModuleDefinition.hasOwnProperty("ad_bidders")) {
@@ -25,32 +23,12 @@ function getModuleDefinitionForPlatform(moduleDefinition, platform) {
 
 async function attachDefinitions(IBC) {
   for (var moduleConfig of IBC.modules) {
-    const moduleDefinition = await fetchModuleDefinition(moduleConfig);
+    const ssGithub = require("./scrimshaw_github");
+    const moduleDefinition = await ssGithub.fetchModuleDefinition(moduleConfig.name, moduleConfig.version);
 
     // Attach the config's definition.
     moduleConfig.definition = moduleDefinition;
   }
-}
-
-async function fetchModuleDefinition(moduleConfig) {
-  var moduleDefinition;
-  const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
-  axiosGithub.defaults.headers.common["Authorization"] = `token ` + JSON.parse(process.env.IBS).github_token;
-  await axiosGithub
-    .get(`/repos/maplemedia/${moduleConfig.name}/contents/ivory_module_definition.json`, {
-      params: {
-        // Get specific git tag.
-        ref: moduleConfig.version,
-      },
-    })
-    .then(function (response) {
-      moduleDefinition = JSON.parse(Buffer.from(response.data.content, response.data.encoding).toString());
-    })
-    .catch(function (error) {
-      throw new Error(`Unable to download ivory_module_definition.json for module [${moduleConfig.name}]. Please check if module version tag [${moduleConfig.version}] exists.\nError:[${error}]`);
-    })
-    .then(function () {});
-  return moduleDefinition;
 }
 
 function loadIBC() {

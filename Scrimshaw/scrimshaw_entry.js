@@ -35,9 +35,20 @@ if (dotEnvResult.error) {
           const scrimshawStep = require("./scrimshaw_bitrise");
           await scrimshawStep.startWorkflow("Scrimshaw");
           break;
+        case "publishIvory":
+          const publishIvoryStep = require("./scrimshaw_publish_ivory");
+          await publishIvoryStep.applyModuleDependencies();
+          break;
       }
     }
   } catch (e) {
+    console.log(e);
+    if (e.hasOwnProperty("errors")) {
+      console.log("Errors:");
+      for (var i = 0; i < e.errors.length; i++) {
+        console.log(e.errors[i]);
+      }
+    }
     const slackStep = require("./scrimshaw_slack");
     await slackStep.reportException(e);
 
