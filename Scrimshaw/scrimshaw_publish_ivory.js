@@ -7,9 +7,17 @@ const fs = require("fs");
 const exec_cmd = require("./exec_cmd");
 
 async function applyModuleDependencies() {
+  if (!process.env.hasOwnProperty("IBC")){
+    throw new Error("No IBC environment variable for publishIvory step. Cannot get platform.");
+  }
+  var IBC = JSON.parse(process.env.IBC);
+  if (!IBC.hasOwnProperty("ivory_module_definition_path")) {
+    throw new Error("Missing ivory_module_definition_path in IBC.");
+  }
+
   // Get dependencies from module definition.
   console.log("Loading ivory_module_definition.json ...");
-  var moduleDefinitionPath = process.env.BITRISE_SOURCE_DIR + "/ivory_module_definition.json";
+  var moduleDefinitionPath = process.env.BITRISE_SOURCE_DIR + "/" + IBC.ivory_module_definition_path;
   var rawModuleDefinition = fs.readFileSync(moduleDefinitionPath);
   var moduleDefinition = JSON.parse(rawModuleDefinition);
 
@@ -20,12 +28,8 @@ async function applyModuleDependencies() {
 
       // Automatically add optimistic operator on iOS.
       var envValue = moduleDependency.min_version;
-      if (process.env.hasOwnProperty("IBC")) {
-        if (JSON.parse(process.env.IBC).platform === "ios") {
-          envValue = `~> ${envValue}`;
-        }
-      } else {
-        throw new Error("No IBC environment variable for publishIvory step. Cannot get platform.");
+      if (IBC.platform === "ios") {
+        envValue = `~> ${envValue}`;
       }
 
       // Set bitrise_env value to min version using envman.
