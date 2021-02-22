@@ -6,6 +6,7 @@ if (dotEnvResult.error) {
 (async () => {
   try {
     if (process.env.hasOwnProperty("substep")) {
+      console.log(`Starting substep:${process.env.substep}`);
       switch (process.env.substep) {
         case "validate":
           const validateStep = require("./scrimshaw_validate");
