@@ -15,7 +15,7 @@ function validateAdsModule(IBC, moduleConfig) {
   if (moduleConfig.hasOwnProperty("ad_bidders")) {
     for (var i = 0; i < moduleConfig.ad_bidders.length; i++) {
       var adBidderConfig = moduleConfig.ad_bidders[i];
-      const adBidderDefinition = ibcLoader.getAdBidderDefinition(moduleConfig.definition, IBC.platform, adBidderConfig.name);
+      const adBidderDefinition = ibcLoader.getAdBidderDefinition(moduleConfig.definition, adBidderConfig.name);
 
       if (adBidderDefinition) {
         // Check if this bidder requires an ID and it is missing.
@@ -33,7 +33,7 @@ function validateAdsModule(IBC, moduleConfig) {
   // Validate networks exist and if their required IDs are present.
   for (var i = 0; i < moduleConfig.ad_networks.length; i++) {
     var adNetworkConfig = moduleConfig.ad_networks[i];
-    const adNetworkDefinition = ibcLoader.getAdNetworkDefinition(moduleConfig.definition, IBC.platform, adNetworkConfig.name);
+    const adNetworkDefinition = ibcLoader.getAdNetworkDefinition(moduleConfig.definition, adNetworkConfig.name);
 
     if (adNetworkDefinition) {
       // Check if this network requires an ID and it is missing.

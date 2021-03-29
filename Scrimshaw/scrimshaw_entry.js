@@ -36,9 +36,9 @@ if (dotEnvResult.error) {
           const scrimshawStep = require("./scrimshaw_bitrise");
           await scrimshawStep.startWorkflow("Scrimshaw");
           break;
-        case "publishIvory":
-          const publishIvoryStep = require("./scrimshaw_publish_ivory");
-          await publishIvoryStep.applyModuleDependencies();
+        case "applyModuleDependencies":
+          const ivoryStep = require("./scrimshaw_ivory");
+          await ivoryStep.applyModuleDependencies();
           break;
       }
     }

@@ -3,28 +3,22 @@ if (dotEnvResult.error) {
   throw dotEnvResult.error;
 }
 
-function getAdBidderDefinition(moduleDefinition, platform, adBidderName) {
-  const platformModuleDefinition = getModuleDefinitionForPlatform(moduleDefinition, platform);
-  if (platformModuleDefinition.hasOwnProperty("ad_bidders")) {
+function getAdBidderDefinition(moduleDefinition, adBidderName) {
+  if (moduleDefinition.hasOwnProperty("ad_bidders")) {
     return platformModuleDefinition.ad_bidders.find((element) => element.name === adBidderName);
   } else {
     return null;
   }
 }
 
-function getAdNetworkDefinition(moduleDefinition, platform, adNetworkName) {
-  const platformModuleDefinition = getModuleDefinitionForPlatform(moduleDefinition, platform);
-  return platformModuleDefinition.ad_networks.find((element) => element.name === adNetworkName);
-}
-
-function getModuleDefinitionForPlatform(moduleDefinition, platform) {
-  return moduleDefinition.platforms.find((element) => element.name === platform);
+function getAdNetworkDefinition(moduleDefinition, adNetworkName) {
+  return moduleDefinition.ad_networks.find((element) => element.name === adNetworkName);
 }
 
 async function attachDefinitions(IBC) {
   for (var moduleConfig of IBC.modules) {
     const ssGithub = require("./scrimshaw_github");
-    const moduleDefinition = await ssGithub.fetchModuleDefinition(moduleConfig.name, moduleConfig.version);
+    const moduleDefinition = await ssGithub.fetchModuleDefinition(moduleConfig.name, moduleConfig.version, IBC.platform);
 
     // Attach the config's definition.
     moduleConfig.definition = moduleDefinition;

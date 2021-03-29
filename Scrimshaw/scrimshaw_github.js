@@ -4,7 +4,7 @@ if (dotEnvResult.error) {
 }
 const axios = require("axios");
 
-async function fetchModuleDefinition(moduleName, moduleVersion) {
+async function fetchModuleDefinition(moduleName, moduleVersion, platform) {
   var moduleDefinition;
   if (process.env.hasOwnProperty("IBS")){
     var IBS = JSON.parse(process.env.IBS);
@@ -12,7 +12,7 @@ async function fetchModuleDefinition(moduleName, moduleVersion) {
       const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
       axiosGithub.defaults.headers.common["Authorization"] = `token ` + IBS.github_token;
       await axiosGithub
-        .get(`/repos/maplemedia/${moduleName}/contents/ivory_module_definition.json`, {
+        .get(`/repos/maplemedia/${moduleName}/contents/ivory_module_definition_${platform}.json`, {
           params: {
             // Get specific git tag.
             ref: moduleVersion,
@@ -22,7 +22,7 @@ async function fetchModuleDefinition(moduleName, moduleVersion) {
           moduleDefinition = JSON.parse(Buffer.from(response.data.content, response.data.encoding).toString());
         })
         .catch(function (error) {
-          throw new Error(`Unable to download ivory_module_definition.json for module [${moduleName}]. Please check if module version tag [${moduleVersion}] exists.\nError:[${error}]`);
+          throw new Error(`Unable to download ivory_module_definition_${platform}.json for module [${moduleName}]. Please check if module version tag [${moduleVersion}] exists.\nError:[${error}]`);
         })
         .then(function () {});
     } else {

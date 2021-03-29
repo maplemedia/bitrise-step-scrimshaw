@@ -26,7 +26,7 @@ function applyIBCToPlist(IBC) {
       for (var adBidderConfig of moduleConfig.ad_bidders) {
         if (adBidderConfig.hasOwnProperty("id")) {
           // Get ad network id name from definition.
-          const adBidderDefinition = ibcLoader.getAdBidderDefinition(moduleConfig.definition, IBC.platform, adBidderConfig.name);
+          const adBidderDefinition = ibcLoader.getAdBidderDefinition(moduleConfig.definition, adBidderConfig.name);
 
           if (adBidderDefinition.hasOwnProperty("id")) {
             plistToApply.push({
@@ -48,7 +48,7 @@ function applyIBCToPlist(IBC) {
       for (var adNetworkConfig of moduleConfig.ad_networks) {
         if (adNetworkConfig.hasOwnProperty("id")) {
           // Get ad network id name from definition.
-          const adNetworkDefinition = ibcLoader.getAdNetworkDefinition(moduleConfig.definition, IBC.platform, adNetworkConfig.name);
+          const adNetworkDefinition = ibcLoader.getAdNetworkDefinition(moduleConfig.definition, adNetworkConfig.name);
 
           if (adNetworkDefinition.hasOwnProperty("id")) {
             plistToApply.push({
@@ -130,8 +130,6 @@ async function applyIBCToPodfile(IBC) {
 
         // Apply dependency versions and sources of modules.
         for (var moduleConfig of IBC.modules) {
-          const platformModuleDefinition = ibcLoader.getModuleDefinitionForPlatform(moduleConfig.definition, IBC.platform);
-
           // Find the podfile dependency for this module.
           var foundDependency = null;
           var subspecDependencies = [];
@@ -139,7 +137,7 @@ async function applyIBCToPodfile(IBC) {
             var dependency = targetDefinition.dependencies[i];
             Object.keys(dependency).forEach(function (k) {
               // JSON dependencies are written like:[spec/subspec]
-              if (k.toLowerCase().startsWith(platformModuleDefinition.library_name.toLowerCase())) {
+              if (k.toLowerCase().startsWith(moduleConfig.definition.library_name.toLowerCase())) {
                 if (k.includes("/")) {
                   // Subspecs append a '/' character. We remove them all and add new ones later ...
                   subspecDependencies.push(k);
@@ -157,7 +155,7 @@ async function applyIBCToPodfile(IBC) {
           for (var subspec of subspecDependencies) {
             for (var i = 0; i < targetDefinition.dependencies.length; i++) {
               if (targetDefinition.dependencies[i].hasOwnProperty(subspec)) {
-                console.log(`${platformModuleDefinition.library_name}:removing subspec from old podfile:[${subspec}].`);
+                console.log(`${moduleConfig.definition.library_name}:removing subspec from old podfile:[${subspec}].`);
                 targetDefinition.dependencies.splice(i, 1);
                 break;
               }
@@ -169,7 +167,6 @@ async function applyIBCToPodfile(IBC) {
           // we can have exact lists.
           if (moduleConfig.hasOwnProperty("ad_networks")) {
             // Ad bidder definitions.
-
             if (moduleConfig.hasOwnProperty("ad_bidders")) {
               for (var adBidderConfig of moduleConfig.ad_bidders) {
                 // Add ad network subspecs.

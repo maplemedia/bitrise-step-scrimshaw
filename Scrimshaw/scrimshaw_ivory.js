@@ -8,7 +8,7 @@ const exec_cmd = require("./exec_cmd");
 
 async function applyModuleDependencies() {
   if (!process.env.hasOwnProperty("IBC")){
-    throw new Error("No IBC environment variable for publishIvory step. Cannot get platform.");
+    throw new Error("No IBC environment variable for applyModuleDependencies step.");
   }
   var IBC = JSON.parse(process.env.IBC);
   if (!IBC.hasOwnProperty("ivory_module_definition_path")) {
@@ -16,7 +16,7 @@ async function applyModuleDependencies() {
   }
 
   // Get dependencies from module definition.
-  console.log("Loading ivory_module_definition.json ...");
+  console.log(`Loading ${IBC.ivory_module_definition_path} ...`);
   var moduleDefinitionPath = process.env.BITRISE_SOURCE_DIR + "/" + IBC.ivory_module_definition_path;
   var rawModuleDefinition = fs.readFileSync(moduleDefinitionPath);
   var moduleDefinition = JSON.parse(rawModuleDefinition);
@@ -24,7 +24,7 @@ async function applyModuleDependencies() {
   if (moduleDefinition.hasOwnProperty("dependencies")) {
     for (var moduleDependency of moduleDefinition.dependencies) {
       console.log(`Fetching ${moduleDependency.name} env key name from github ...`);
-      const moduleDefinition = await ssGithub.fetchModuleDefinition(moduleDependency.name, moduleDependency.min_version);
+      const moduleDefinition = await ssGithub.fetchModuleDefinition(moduleDependency.name, moduleDependency.min_version, IBC.platform);
 
       // Automatically add optimistic operator on iOS.
       var envValue = moduleDependency.min_version;
