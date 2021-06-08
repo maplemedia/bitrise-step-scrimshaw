@@ -12,7 +12,7 @@ async function fetchModuleDefinition(moduleName, moduleVersion, platform) {
       const axiosGithub = axios.create({ baseURL: "https://api.github.com" });
       axiosGithub.defaults.headers.common["Authorization"] = `token ` + IBS.github_token;
       await axiosGithub
-        .get(`/repos/maplemedia/${moduleName}/contents/ivory_module_definition_${platform}.json`, {
+        .get(`/repos/maplemedia/${moduleName}/contents/ivory_module_definition` + (typeof platform != "undefined" ? `_${platform}` : "") + `.json`, {
           params: {
             // Get specific git tag.
             ref: moduleVersion,
