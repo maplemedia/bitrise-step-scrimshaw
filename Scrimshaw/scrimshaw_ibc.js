@@ -59,6 +59,5 @@ module.exports = {
   loadIBC,
   attachDefinitions,
   getAdBidderDefinition,
-  getAdNetworkDefinition,
-  getModuleDefinitionForPlatform,
+  getAdNetworkDefinition
 };

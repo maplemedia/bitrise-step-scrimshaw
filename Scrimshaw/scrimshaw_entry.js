@@ -40,6 +40,10 @@ if (dotEnvResult.error) {
           const ivoryStep = require("./scrimshaw_ivory");
           await ivoryStep.applyModuleDependencies();
           break;
+        case "skan":
+          const skanStep = require("./scrimshaw_skadnetwork");
+          await skanStep.cleanSKAN();
+          break;
       }
     }
   } catch (e) {
