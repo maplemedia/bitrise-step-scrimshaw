@@ -9,12 +9,12 @@ const { stderr } = require("process");
 //  ex: {"SKAdNetworkItems":[{"name":"X","key":"SKAdNetworkIdentifier", "id": "xxx.skadnetwork"}]}
 //
 // SKAdNetworks.plist
-//  A plist containing as many SKAN IDs to be cleaned up and only unique ids are kept. 
+//  A plist containing as many SKAN IDs to be cleaned up and only unique ids are kept.
 //
 // OUTPUTS:
 //  A new plist file with only unique IDs.
 //  Written to CleanSKAdNetworks.plist
-//  Then, the network names from the SKAdNetworks.json file are patched as XML comments. 
+//  Then, the network names from the SKAdNetworks.json file are patched as XML comments.
 //  Written to PatchedSKAdNetworks.plist
 //
 // IMPROVEMENTS:
@@ -24,6 +24,13 @@ async function cleanSKAN()
 {
     const filePath = "SKAdNetworks.plist";
     var loadedPlist = plist.parse(fs.readFileSync(filePath, "utf8"));
+    var unityBuildConfig =
+    {
+        "info.plist":
+        {
+            SKAdNetworkItems:[]
+        }
+    };
     var cleanPlist = {SKAdNetworkItems:[]};
 
     // Only keep unique SKAdNetworkIdentifiers
@@ -41,11 +48,13 @@ async function cleanSKAN()
         if (!found)
         {
             cleanPlist.SKAdNetworkItems.push(SKAdNetworkItem);
+            unityBuildConfig["info.plist"].SKAdNetworkItems.push(SKAdNetworkItem.SKAdNetworkIdentifier);
         }
     }
 
     var appliedPlist = plist.build(cleanPlist);
     fs.writeFileSync("CleanSKAdNetworks.plist", appliedPlist);
+    fs.writeFileSync("UnityCleanSKAdNetworks.json", JSON.stringify(unityBuildConfig));
 
     patchCleanSKAN(appliedPlist);
 }
